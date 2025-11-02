@@ -32,7 +32,7 @@ export default function ClientPagination({ allIpos }: ClientPaginationProps) {
         ))}
       </div>
 
-      {/* View More Button */}
+      {/* View More Button - REMOVED COUNT */}
       {hasMore && (
         <div className="flex flex-col items-center gap-6 py-8">
           <button
@@ -44,20 +44,16 @@ export default function ClientPagination({ allIpos }: ClientPaginationProps) {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Loading 10 More...</span>
+                  <span>Loading More...</span>
                 </>
               ) : (
                 <>
-                  <span>📊 View More IPOs ({remaining} remaining)</span>
+                  <span>📊 View More IPOs</span>
                   <span className="text-2xl group-hover:translate-y-1 transition-transform">↓</span>
                 </>
               )}
             </div>
           </button>
-
-          <p className="text-gray-600 dark:text-gray-400 font-medium">
-            Showing {itemsToShow} of {allIpos.length} IPOs
-          </p>
         </div>
       )}
 
@@ -67,7 +63,7 @@ export default function ClientPagination({ allIpos }: ClientPaginationProps) {
           <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border-2 border-green-300 dark:border-green-700">
             <span className="text-3xl">✅</span>
             <div>
-              <div className="font-bold text-green-800 dark:text-green-300">All {allIpos.length} IPOs Loaded!</div>
+              <div className="font-bold text-green-800 dark:text-green-300">All IPOs Loaded!</div>
               <div className="text-sm text-green-700 dark:text-green-400">No more IPOs to display</div>
             </div>
           </div>

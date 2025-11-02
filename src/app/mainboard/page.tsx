@@ -1,6 +1,5 @@
 import { fetchIPOsByCategory, sortIPOsByPriority } from "@/lib/api";
-import Filters from "@/components/Filters";
-import ClientPagination from "@/components/ClientPagination";
+import SmartFilters from "@/components/SmartFilters";
 import Link from "next/link";
 
 export const revalidate = 300;
@@ -33,20 +32,12 @@ export default async function MainboardPage() {
         </div>
       </section>
 
-      {/* Filters */}
-      <Filters />
-
-      {/* Content */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {sortedIPOs.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4 opacity-50">📊</div>
-            <h2 className="text-2xl font-bold">No Mainboard IPOs Found</h2>
-          </div>
-        ) : (
-          <ClientPagination allIpos={sortedIPOs} />
-        )}
-      </section>
+      {/* Smart Filters - Hide Category, Show Status */}
+      <SmartFilters
+        allIpos={sortedIPOs}
+        hideCategory={true}
+        defaultCategory="mainboard"
+      />
     </>
   );
 }
