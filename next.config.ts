@@ -1,8 +1,17 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ipofly-273428006377.asia-south1.run.app',
+        pathname: '/**',
+      },
+    ],
+    formats: ['image/avif', 'image/webp'],
+  },
+  reactStrictMode: true,
 };
 
 export default nextConfig;
