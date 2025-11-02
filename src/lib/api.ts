@@ -8,14 +8,24 @@ export async function fetchAllIPOs(): Promise<IPO[]> {
   try {
     const response = await fetch(`${API_URL}/ipos`, {
       next: { revalidate: 300 }, // Revalidate every 5 minutes
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch IPOs');
+      console.error(`Failed to fetch IPOs: ${response.status} ${response.statusText}`);
+      return [];
     }
 
     const data: ApiResponse = await response.json();
-    return data.data || [];
+
+    if (!data.success || !Array.isArray(data.data)) {
+      console.error('Invalid API response format');
+      return [];
+    }
+
+    return data.data;
   } catch (error) {
     console.error('Error fetching IPOs:', error);
     return [];
@@ -41,20 +51,23 @@ export async function fetchIPOsByStatus(status: string): Promise<IPO[]> {
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
 
 export function normalizeCategory(category: string): string {
   if (!category) return 'mainboard';
-  const cat = category.toLowerCase();
+  const cat = category.toLowerCase().trim();
   if (cat.includes('sme')) return 'sme';
   return 'mainboard';
 }
 
 export function normalizeStatus(status: string): string {
   if (!status) return 'upcoming';
-  const stat = status.toLowerCase();
+  const stat = status.toLowerCase().trim();
 
   if (stat.includes('listed')) return 'listed';
   if (stat.includes('alloted') || stat.includes('allotted')) return 'allotted';
@@ -65,17 +78,17 @@ export function normalizeStatus(status: string): string {
   return 'upcoming';
 }
 
-export function parseGMP(gmp: string): {
+export function parseGMP(gmp: string | number): {
   amount: number;
   amountText: string;
   percentText: string | null;
   isPositive: boolean;
 } {
-  const str = String(gmp || '0');
+  const str = String(gmp || '0').trim();
   const [amtPart, percentPart] = str.split('(');
   const amount = parseFloat((amtPart || '0').replace(/[^0-9.-]/g, '')) || 0;
 
-  const amountText = `${amount >= 0 ? '+' : '-'}₹${Math.abs(amount).toLocaleString('en-IN')}`;
+  const amountText = `${amount >= 0 ? '+' : ''}₹${Math.abs(amount).toLocaleString('en-IN')}`;
 
   let percentText = null;
   if (percentPart) {
@@ -100,8 +113,8 @@ export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
       'ongoing': 1,
       'upcoming': 2,
       'closed': 3,
-      'listed': 4,
-      'allotted': 5,
+      'allotted': 4,
+      'listed': 5,
     };
 
     const priorityA = statusPriority[statusA] || 999;
@@ -111,8 +124,9 @@ export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
       return priorityA - priorityB;
     }
 
-    const dateA = Date.parse(a.issueCloseDate) || 0;
-    const dateB = Date.parse(b.issueCloseDate) || 0;
+    // Sort by date
+    const dateA = new Date(a.issueCloseDate || '').getTime() || 0;
+    const dateB = new Date(b.issueCloseDate || '').getTime() || 0;
     return dateB - dateA;
   });
 }

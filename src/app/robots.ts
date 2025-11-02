@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/_next/"],
       },
     ],
-    sitemap: "https://smoak2317.github.io/ipofly-frontend/sitemap.xml",
+    sitemap: "https://ipofly.com/sitemap.xml", // Update to your actual domain
   };
 }
