@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -42,9 +42,9 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 uppercase">Resources</h4>
             <ul className="space-y-2">
               {[
-                { href: "/#faq", label: "About IPO GMP" },
-                { href: "/#how-to", label: "How to Apply" },
-                { href: "/#allotment", label: "Check Allotment" },
+                { href: "#about", label: "About IPO GMP" },
+                { href: "#how-to", label: "How to Apply" },
+                { href: "#allotment", label: "Check Allotment" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
@@ -59,9 +59,9 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 uppercase">Legal</h4>
             <ul className="space-y-2">
               {[
-                { href: "/#privacy", label: "Privacy Policy" },
-                { href: "/#terms", label: "Terms of Service" },
-                { href: "/#disclaimer", label: "Disclaimer" },
+                { href: "#privacy", label: "Privacy Policy" },
+                { href: "#terms", label: "Terms of Service" },
+                { href: "#disclaimer", label: "Disclaimer" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">

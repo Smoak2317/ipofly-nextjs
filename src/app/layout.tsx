@@ -33,6 +33,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://ipofly-273428006377.asia-south1.run.app" />
+        <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />
       </head>
       <body className={`${inter.variable} antialiased`}>
         <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors">

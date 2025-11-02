@@ -1,29 +1,12 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import SearchBar from './SearchBar';
+import DarkModeToggle from './DarkModeToggle';
 
 export default function Navbar() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    // Check system preference
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle("dark");
-  };
-
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 gap-4">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="text-3xl">📊</div>
             <div>
@@ -47,13 +30,12 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            aria-label="Toggle dark mode"
-          >
-            <span className="text-xl">{darkMode ? "☀️" : "🌙"}</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <SearchBar />
+            </div>
+            <DarkModeToggle />
+          </div>
         </div>
       </nav>
     </header>

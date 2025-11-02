@@ -1,5 +1,3 @@
-// src/lib/api.ts
-
 import { IPO, ApiResponse } from '@/types/ipo';
 
 const API_URL = 'https://ipofly-273428006377.asia-south1.run.app/api';
@@ -7,25 +5,17 @@ const API_URL = 'https://ipofly-273428006377.asia-south1.run.app/api';
 export async function fetchAllIPOs(): Promise<IPO[]> {
   try {
     const response = await fetch(`${API_URL}/ipos`, {
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      next: { revalidate: 300 },
+      headers: { 'Content-Type': 'application/json' },
     });
 
     if (!response.ok) {
-      console.error(`Failed to fetch IPOs: ${response.status} ${response.statusText}`);
+      console.error(`Failed to fetch IPOs: ${response.status}`);
       return [];
     }
 
     const data: ApiResponse = await response.json();
-
-    if (!data.success || !Array.isArray(data.data)) {
-      console.error('Invalid API response format');
-      return [];
-    }
-
-    return data.data;
+    return data.success && Array.isArray(data.data) ? data.data : [];
   } catch (error) {
     console.error('Error fetching IPOs:', error);
     return [];
@@ -34,8 +24,7 @@ export async function fetchAllIPOs(): Promise<IPO[]> {
 
 export async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
   const ipos = await fetchAllIPOs();
-  const ipo = ipos.find((ipo) => slugify(ipo.name) === slug);
-  return ipo || null;
+  return ipos.find((ipo) => slugify(ipo.name) === slug) || null;
 }
 
 export async function fetchIPOsByCategory(category: string): Promise<IPO[]> {
@@ -52,17 +41,16 @@ export function slugify(text: string): string {
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 export function normalizeCategory(category: string): string {
   if (!category) return 'mainboard';
   const cat = category.toLowerCase().trim();
-  if (cat.includes('sme')) return 'sme';
-  return 'mainboard';
+  return cat.includes('sme') ? 'sme' : 'mainboard';
 }
 
 export function normalizeStatus(status: string): string {
@@ -124,7 +112,6 @@ export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
       return priorityA - priorityB;
     }
 
-    // Sort by date
     const dateA = new Date(a.issueCloseDate || '').getTime() || 0;
     const dateB = new Date(b.issueCloseDate || '').getTime() || 0;
     return dateB - dateA;

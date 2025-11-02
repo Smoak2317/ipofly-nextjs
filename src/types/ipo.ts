@@ -1,5 +1,3 @@
-// src/types/ipo.ts
-
 export interface GmpHistory {
   date: string;
   gmp: string;

@@ -1,7 +1,9 @@
-import Link from "next/link";
-import Image from "next/image";
-import { IPO } from "@/types/ipo";
-import { slugify, parseGMP, normalizeCategory, normalizeStatus } from "@/lib/api";
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { IPO } from '@/types/ipo';
+import { slugify, parseGMP, normalizeCategory, normalizeStatus } from '@/lib/api';
 
 interface IpoCardProps {
   ipo: IPO;
@@ -53,7 +55,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                 {category}
               </span>
               <span className={getStatusBadgeClass(status)}>
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-slow" />
+                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
                 {status}
               </span>
             </div>
