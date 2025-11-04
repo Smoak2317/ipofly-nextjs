@@ -13,9 +13,6 @@ const nextConfig: NextConfig = {
     // Allow local images from public folder
     unoptimized: false,
   },
-    output: 'export', // Enables static export (Next 13+)
-  basePath: '/ipofly-nextjs', // Required for GitHub Pages
-  assetPrefix: '/ipofly-nextjs/', // Required for GitHub Pages
   reactStrictMode: true,
 };
 
