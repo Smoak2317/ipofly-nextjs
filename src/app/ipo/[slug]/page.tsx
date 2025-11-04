@@ -5,9 +5,8 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { IPO, GmpHistory } from "@/types/ipo";
-import { parseGMP, normalizeCategory, slugify } from "@/lib/api";
+import { IPO } from "@/types/ipo";
+import { slugify } from "@/lib/api";
 import IpoDetailClient from "@/components/IpoDetailClient";
 
 async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
@@ -15,9 +14,18 @@ async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
     const res = await fetch('https://ipofly-273428006377.asia-south1.run.app/api/ipos', {
       next: { revalidate: 300 }
     });
+
+    if (!res.ok) {
+      console.error('Failed to fetch IPOs:', res.status);
+      return null;
+    }
+
     const data = await res.json();
 
-    if (!data.success) return null;
+    if (!data.success || !Array.isArray(data.data)) {
+      console.error('Invalid API response');
+      return null;
+    }
 
     return data.data.find((ipo: IPO) => slugify(ipo.name) === slug) || null;
   } catch (error) {
@@ -28,8 +36,21 @@ async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
 
 export async function generateStaticParams() {
   try {
-    const res = await fetch('https://ipofly-273428006377.asia-south1.run.app/api/ipos');
+    const res = await fetch('https://ipofly-273428006377.asia-south1.run.app/api/ipos', {
+      next: { revalidate: 300 }
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch IPOs for static params:', res.status);
+      return [];
+    }
+
     const data = await res.json();
+
+    if (!data.success || !Array.isArray(data.data)) {
+      console.error('Invalid API response for static params');
+      return [];
+    }
 
     return data.data.map((ipo: IPO) => ({
       slug: slugify(ipo.name),

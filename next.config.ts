@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    // Allow local images from public folder
+    unoptimized: false,
   },
   reactStrictMode: true,
 };

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { usePathname } from 'next/navigation';
 import { IPO } from '@/types/ipo';
 import { normalizeCategory, normalizeStatus } from '@/lib/api';
 import ClientPagination from './ClientPagination';
@@ -21,7 +20,6 @@ export default function SmartFilters({
   defaultCategory = 'all',
   defaultStatus = 'all'
 }: SmartFiltersProps) {
-  const pathname = usePathname();
   const [categoryFilter, setCategoryFilter] = useState<string>(defaultCategory);
   const [statusFilter, setStatusFilter] = useState<string>(defaultStatus);
 

@@ -1,11 +1,21 @@
 'use client';
 
 import { GmpHistory } from '@/types/ipo';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 interface GmpSparkChartProps {
   history: GmpHistory[];
   isPositive: boolean;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      gmp: number;
+      fullDate: string;
+    };
+  }>;
 }
 
 export default function GmpSparkChart({ history, isPositive }: GmpSparkChartProps) {
@@ -26,7 +36,7 @@ export default function GmpSparkChart({ history, isPositive }: GmpSparkChartProp
     );
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
       const { gmp, fullDate } = payload[0].payload;
       return (

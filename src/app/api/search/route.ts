@@ -1,4 +1,4 @@
-import { fetchAllIPOs, slugify, normalizeCategory, normalizeStatus } from '@/lib/api';
+import { fetchAllIPOs, normalizeCategory, normalizeStatus } from '@/lib/api';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {

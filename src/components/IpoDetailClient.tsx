@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { IPO, GmpHistory } from '@/types/ipo';
+import { IPO } from '@/types/ipo';
 import { parseGMP, normalizeCategory } from '@/lib/api';
 import GmpSparkChart from './GmpSparkChart';
 
@@ -267,7 +267,7 @@ export default function IpoDetailClient({ ipo }: IpoDetailClientProps) {
               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-12 text-center">
                 <div className="text-6xl mb-4">🎯</div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Check Your Allotment Status</h3>
-                <p className="text-gray-600 dark:text-gray-400">Find out if you've been allotted shares in {ipo.name} IPO</p>
+                <p className="text-gray-600 dark:text-gray-400">Find out if you&apos;ve been allotted shares in {ipo.name} IPO</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

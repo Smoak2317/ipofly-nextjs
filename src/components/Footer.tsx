@@ -1,3 +1,4 @@
+import Logo from './logo';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -8,13 +9,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <div className="text-3xl">📊</div>
-              <div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">IpoFly</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Live GMP Tracker</div>
-              </div>
-            </Link>
+            {/* Logo - Medium size in footer */}
+            <div className="mb-4">
+              <Logo size="xl" showText={true} />
+            </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
               Track live IPO GMP, grey market premium, and subscription status for all Indian IPOs.
             </p>

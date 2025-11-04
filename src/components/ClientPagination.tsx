@@ -14,7 +14,6 @@ export default function ClientPagination({ allIpos }: ClientPaginationProps) {
 
   const displayedIpos = allIpos.slice(0, itemsToShow);
   const hasMore = itemsToShow < allIpos.length;
-  const remaining = allIpos.length - itemsToShow;
 
   const handleLoadMore = async () => {
     setLoading(true);
