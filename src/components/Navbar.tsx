@@ -67,19 +67,13 @@ export default function Navbar() {
 
           {/* CENTER: Logo */}
           <div className="flex-shrink-0">
-            <Logo size="md" showText={false} />
+            <Logo size="xl" showText={false} />
           </div>
 
           {/* RIGHT: Search + Dark Mode */}
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Desktop Search */}
-            <div className="hidden md:block">
-              <Suspense fallback={
-                <div className="w-48 lg:w-64 h-10 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
-              }>
-                <SearchBar />
-              </Suspense>
-            </div>
+
 
             {/* Mobile Search Button */}
             <button
@@ -95,6 +89,13 @@ export default function Navbar() {
             {/* Dark Mode Toggle */}
             <div className="hidden sm:block">
               <DarkModeToggle />
+            </div>
+            <div className="hidden md:block">
+              <Suspense fallback={
+                <div className="w-80 lg:w-64 h-10 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+              }>
+                <SearchBar />
+              </Suspense>
             </div>
           </div>
         </div>
