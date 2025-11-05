@@ -50,7 +50,7 @@ export default function Hero() {
 
           {/* Subheading */}
           <p className="text-base md:text-xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed animate-slide-up animation-delay-200 font-medium">
-            India's most comprehensive IPO intelligence platform
+            India&apos;s most comprehensive IPO intelligence platform
             <br className="hidden sm:block" />
             <span className="text-white/75">with live GMP tracking, subscription data & expert analytics</span>
           </p>

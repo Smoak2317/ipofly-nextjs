@@ -15,7 +15,7 @@ export default function Footer() {
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">IpoFly</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              India's trusted platform for live IPO GMP tracking and detailed analytics.
+              India&apos;s trusted platform for live IPO GMP tracking and detailed analytics.
             </p>
           </div>
 
