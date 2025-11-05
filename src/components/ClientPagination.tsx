@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { IPO } from '@/types/ipo';
 import IpoCard from './IpoCard';
 
@@ -11,16 +11,42 @@ interface ClientPaginationProps {
 export default function ClientPagination({ allIpos }: ClientPaginationProps) {
   const [itemsToShow, setItemsToShow] = useState(10);
   const [loading, setLoading] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   const displayedIpos = allIpos.slice(0, itemsToShow);
   const hasMore = itemsToShow < allIpos.length;
 
-  const handleLoadMore = async () => {
+  const loadMore = useCallback(() => {
+    if (loading || !hasMore) return;
+
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setItemsToShow(prev => prev + 10);
-    setLoading(false);
-  };
+    setTimeout(() => {
+      setItemsToShow(prev => Math.min(prev + 10, allIpos.length));
+      setLoading(false);
+    }, 500);
+  }, [loading, hasMore, allIpos.length]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loading, loadMore]);
 
   return (
     <div className="space-y-12">
@@ -31,28 +57,15 @@ export default function ClientPagination({ allIpos }: ClientPaginationProps) {
         ))}
       </div>
 
-      {/* View More Button - REMOVED COUNT */}
+      {/* Loading Indicator */}
       {hasMore && (
-        <div className="flex flex-col items-center gap-6 py-8">
-          <button
-            onClick={handleLoadMore}
-            disabled={loading}
-            className="group px-12 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-xl hover:shadow-2xl disabled:cursor-not-allowed"
-          >
-            <div className="flex items-center justify-center gap-3">
-              {loading ? (
-                <>
-                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Loading More...</span>
-                </>
-              ) : (
-                <>
-                  <span>📊 View More IPOs</span>
-                  <span className="text-2xl group-hover:translate-y-1 transition-transform">↓</span>
-                </>
-              )}
+        <div ref={observerTarget} className="flex justify-center py-8">
+          {loading && (
+            <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200 dark:border-indigo-700">
+              <div className="w-5 h-5 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+              <span className="text-indigo-600 dark:text-indigo-400 font-semibold">Loading more IPOs...</span>
             </div>
-          </button>
+          )}
         </div>
       )}
 
@@ -63,7 +76,9 @@ export default function ClientPagination({ allIpos }: ClientPaginationProps) {
             <span className="text-3xl">✅</span>
             <div>
               <div className="font-bold text-green-800 dark:text-green-300">All IPOs Loaded!</div>
-              <div className="text-sm text-green-700 dark:text-green-400">No more IPOs to display</div>
+              <div className="text-sm text-green-700 dark:text-green-400">
+                Showing all {allIpos.length} IPOs
+              </div>
             </div>
           </div>
         </div>
