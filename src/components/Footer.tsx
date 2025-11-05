@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <div className="mb-4">
-              <Logo size="xl" showText={true} />
+              <Logo size="3xl" showText={true} />
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
               Track live IPO GMP, grey market premium, and subscription status for all Indian IPOs.

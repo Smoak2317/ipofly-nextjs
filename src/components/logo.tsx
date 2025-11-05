@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 interface LogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   showText?: boolean;
 }
 
@@ -14,6 +14,8 @@ const sizeMap = {
   md: { container: 'w-14 h-14', image: 56 },
   lg: { container: 'w-20 h-20', image: 80 },
   xl: { container: 'w-24 h-24', image: 96 },
+  '2xl': { container: 'w-32 h-32', image: 128 }, // ✅ New large size
+  '3xl': { container: 'w-40 h-40', image: 160 },
 };
 
 export default function Logo({ size = 'md', showText = true }: LogoProps) {

@@ -10,7 +10,7 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo - Large size in navbar */}
-          <Logo size="xl" showText={true} />
+          <Logo size="2xl" showText={false} />
 
           <div className="hidden md:flex items-center gap-6">
             <Link href="/mainboard" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
