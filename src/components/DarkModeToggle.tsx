@@ -21,14 +21,14 @@ export default function DarkModeToggle() {
 
   if (!mounted) {
     return (
-      <div className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 w-10 h-10 animate-pulse" />
+      <div className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 w-11 h-11 animate-pulse" />
     );
   }
 
   return (
     <button
       onClick={toggle}
-      className="relative p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all group overflow-hidden"
+      className="relative p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all group overflow-hidden shadow-sm hover:shadow-md"
       aria-label="Toggle dark mode"
     >
       {/* Sun Icon */}
