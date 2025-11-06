@@ -1,9 +1,14 @@
-// src/app/login/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,10 +19,70 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
 
+  // Initialize Google Sign-In
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          callback: handleGoogleLogin,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-signin-button'),
+          {
+            theme: 'outline',
+            size: 'large',
+            width: '100%',
+            text: 'continue_with',
+          }
+        );
+      }
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleGoogleLogin = async (response: any) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/api/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: response.credential }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        router.push('/');
+      } else {
+        setError(data.message || 'Google login failed');
+      }
+    } catch (err) {
+      console.error('Google login error:', err);
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate phone number
     if (phoneNumber.length !== 10) {
       setError('Please enter a valid 10-digit mobile number');
       return;
@@ -27,7 +92,6 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // 🔴 TODO: Replace with your actual API endpoint
       const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,11 +100,10 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         setStep('otp');
-        setResendTimer(30); // 30 seconds countdown
+        setResendTimer(30);
 
-        // Start countdown
         const interval = setInterval(() => {
           setResendTimer((prev) => {
             if (prev <= 1) {
@@ -69,7 +132,6 @@ export default function LoginPage() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       nextInput?.focus();
@@ -96,7 +158,6 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // 🔴 TODO: Replace with your actual API endpoint
       const response = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,8 +166,10 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         localStorage.setItem('authToken', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(data.user));
         router.push('/');
       } else {
         setError(data.message || 'Invalid OTP');
@@ -167,11 +230,11 @@ export default function LoginPage() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {step === 'phone' ? 'Login with Mobile' : 'Verify OTP'}
+              {step === 'phone' ? 'Login to Continue' : 'Verify OTP'}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               {step === 'phone'
-                ? 'Enter your mobile number to continue'
+                ? 'Enter your mobile number or sign in with Google'
                 : `OTP sent to +91 ${phoneNumber}`}
             </p>
           </div>
@@ -188,58 +251,70 @@ export default function LoginPage() {
 
           {/* Phone Number Form */}
           {step === 'phone' && (
-            <form onSubmit={handlePhoneSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Mobile Number
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">+91</span>
+            <>
+              <form onSubmit={handlePhoneSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Mobile Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">+91</span>
+                    </div>
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={phoneNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setPhoneNumber(value);
+                        setError('');
+                      }}
+                      placeholder="Enter 10-digit mobile number"
+                      className="w-full pl-16 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-lg"
+                      required
+                    />
                   </div>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={phoneNumber}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-                      setPhoneNumber(value);
-                      setError('');
-                    }}
-                    placeholder="Enter 10-digit mobile number"
-                    className="w-full pl-16 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-lg"
-                    required
-                  />
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    We&apos;ll send you a 6-digit OTP to verify your number
+                  </p>
                 </div>
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  We&apos;ll send you a 6-digit OTP to verify your number
-                </p>
+
+                <button
+                  type="submit"
+                  disabled={isLoading || phoneNumber.length !== 10}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center justify-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sending OTP...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                      </svg>
+                      Send OTP
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Divider */}
+              <div className="my-6 flex items-center">
+                <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+                <span className="px-4 text-sm text-gray-500 dark:text-gray-400">OR</span>
+                <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isLoading || phoneNumber.length !== 10}
-                className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Sending OTP...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                    </svg>
-                    Send OTP
-                  </>
-                )}
-              </button>
-            </form>
+              {/* Google Sign-In */}
+              <div id="google-signin-button" className="flex justify-center"></div>
+            </>
           )}
 
           {/* OTP Verification Form */}
@@ -278,70 +353,69 @@ export default function LoginPage() {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Verifying...
-                  </>
-                ) : (
-                  <>
+                    </>
+                    ) : (
+                    <>
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                     Verify & Login
-                  </>
-                )}
-              </button>
+                    </>
+                    )}
+                    </button>
+                    {/* Resend OTP */}
+                              <div className="text-center">
+                                {resendTimer > 0 ? (
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    Resend OTP in <span className="font-bold text-indigo-600 dark:text-indigo-400">{resendTimer}s</span>
+                                  </p>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={handleResendOtp}
+                                    className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                                  >
+                                    Resend OTP
+                                  </button>
+                                )}
+                              </div>
 
-              {/* Resend OTP */}
-              <div className="text-center">
-                {resendTimer > 0 ? (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Resend OTP in <span className="font-bold text-indigo-600 dark:text-indigo-400">{resendTimer}s</span>
-                  </p>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                  >
-                    Resend OTP
-                  </button>
-                )}
-              </div>
+                              {/* Change Number */}
+                              <div className="text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setStep('phone');
+                                    setOtp(['', '', '', '', '', '']);
+                                    setError('');
+                                  }}
+                                  className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                                >
+                                  Change mobile number
+                                </button>
+                              </div>
+                            </form>
+                          )}
 
-              {/* Change Number */}
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep('phone');
-                    setOtp(['', '', '', '', '', '']);
-                    setError('');
-                  }}
-                  className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                >
-                  Change mobile number
-                </button>
-              </div>
-            </form>
-          )}
+                          {/* Terms */}
+                          <p className="mt-6 text-xs text-center text-gray-500 dark:text-gray-400">
+                            By continuing, you agree to our{' '}
+                            <Link href="/privacy-policy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                              Terms & Privacy Policy
+                            </Link>
+                          </p>
+                        </div>
 
-          {/* Terms */}
-          <p className="mt-6 text-xs text-center text-gray-500 dark:text-gray-400">
-            By continuing, you agree to our{' '}
-            <Link href="/privacy-policy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-              Terms & Privacy Policy
-            </Link>
-          </p>
-        </div>
-
-        {/* Back to Home */}
-        <div className="text-center mt-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-            </svg>
-            Back to Home
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
+                        {/* Back to Home */}
+                        <div className="text-center mt-6">
+                          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                            </svg>
+                            Back to Home
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                    );
+                    }

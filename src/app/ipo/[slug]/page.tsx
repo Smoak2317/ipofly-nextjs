@@ -8,10 +8,10 @@ import Link from "next/link";
 import { IPO } from "@/types/ipo";
 import { slugify } from "@/lib/api";
 import IpoDetailClient from "@/components/IpoDetailClient";
-
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
 async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
   try {
-    const res = await fetch('https://ipofly-273428006377.asia-south1.run.app/api/ipos', {
+    const res = await fetch(`${BACKEND_API_URL}/api/ipos`, {
       next: { revalidate: 300 }
     });
 
@@ -36,7 +36,7 @@ async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
 
 export async function generateStaticParams() {
   try {
-    const res = await fetch('https://ipofly-273428006377.asia-south1.run.app/api/ipos', {
+    const res = await fetch(`${BACKEND_API_URL}/api/ipos`, {
       next: { revalidate: 300 }
     });
 
