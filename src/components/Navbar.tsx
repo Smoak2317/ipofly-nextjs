@@ -69,7 +69,7 @@ export default function Navbar() {
 
           {/* CENTER: Logo - Absolutely centered */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            <Logo size="xl" showText={false} />
+            <Logo size="3xl" showText={false} />
           </div>
 
           {/* RIGHT: Search + Dark Mode + Profile */}

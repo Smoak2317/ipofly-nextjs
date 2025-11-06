@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Logo & Description */}
           <div className="lg:col-span-1">
             <div className="mb-4">
-              <Logo size="xl" showText={false} />
+              <Logo size="3xl" showText={false} />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">IpoFly</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
