@@ -65,6 +65,10 @@ export default function LoginPage() {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('refreshToken', data.refreshToken);
         localStorage.setItem('user', JSON.stringify(data.user));
+
+        // ✅ FIX: Trigger storage event for immediate navbar update
+        window.dispatchEvent(new Event('storage'));
+
         router.push('/');
       } else {
         setError(data.message || 'Google login failed');
@@ -91,6 +95,7 @@ export default function LoginPage() {
           callback: handleGoogleLogin,
         });
 
+        // ✅ FIX: Render with clean styling
         window.google.accounts.id.renderButton(
           document.getElementById('google-signin-button'),
           {
@@ -201,6 +206,10 @@ export default function LoginPage() {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('refreshToken', data.refreshToken);
         localStorage.setItem('user', JSON.stringify(data.user));
+
+        // ✅ FIX: Trigger storage event for immediate navbar update
+        window.dispatchEvent(new Event('storage'));
+
         router.push('/');
       } else {
         setError(data.message || 'Invalid OTP');
@@ -248,7 +257,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-3 py-8">
       <div className="w-full max-w-md">
-        {/* Logo - Larger for Branding */}
+        {/* Logo */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
             <Logo size="2xl" showText={false} />
@@ -257,7 +266,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-600 dark:text-gray-400">India&apos;s #1 Live IPO GMP Tracker</p>
         </div>
 
-        {/* Login Card - Compact */}
+        {/* Login Card */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-5 border border-gray-200 dark:border-gray-700">
           <div className="mb-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
@@ -270,7 +279,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Error Message - Compact */}
+          {/* Error Message */}
           {error && (
             <div className="mb-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-3 flex items-start gap-2">
               <svg className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -336,14 +345,14 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              {/* Divider - Compact */}
+              {/* Divider */}
               <div className="my-4 flex items-center">
                 <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
                 <span className="px-3 text-xs text-gray-500 dark:text-gray-400">OR</span>
                 <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
               </div>
 
-              {/* Google Sign-In with Loading State */}
+              {/* ✅ FIXED: Styled Google Sign-In Container */}
               <div className="relative min-h-[44px]">
                 {!googleLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -356,7 +365,15 @@ export default function LoginPage() {
                     </div>
                   </div>
                 )}
-                <div id="google-signin-button" className={googleLoaded ? 'flex justify-center' : 'opacity-0'}></div>
+                {/* ✅ FIXED: Wrapper with clean styling */}
+                <div
+                  id="google-signin-button"
+                  className={`flex justify-center ${googleLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  style={{
+                    // Override Google's default styles
+                    minHeight: '44px',
+                  }}
+                ></div>
               </div>
             </>
           )}
@@ -408,7 +425,7 @@ export default function LoginPage() {
                 )}
               </button>
 
-              {/* Resend OTP - Compact */}
+              {/* Resend OTP */}
               <div className="text-center">
                 {resendTimer > 0 ? (
                   <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -426,7 +443,7 @@ export default function LoginPage() {
                 )}
               </div>
 
-              {/* Change Number - Compact */}
+              {/* Change Number */}
               <div className="text-center">
                 <button
                   type="button"
@@ -443,7 +460,7 @@ export default function LoginPage() {
             </form>
           )}
 
-          {/* Terms - Compact */}
+          {/* Terms */}
           <p className="mt-4 text-xs text-center text-gray-500 dark:text-gray-400">
             By continuing, you agree to our{' '}
             <Link href="/privacy-policy" className="text-indigo-600 dark:text-indigo-400 hover:underline">
@@ -452,7 +469,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Back to Home - Compact */}
+        {/* Back to Home */}
         <div className="text-center mt-4">
           <Link href="/" className="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">

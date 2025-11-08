@@ -8,6 +8,7 @@ import "./globals.css";
 import { generateHomeMetadata } from "@/lib/seo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PWARegister from '@/components/PWARegister';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,6 +48,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+      {/* PWA Meta Tags */}
+      <link rel="manifest" href="/manifest.json" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta name="apple-mobile-web-app-title" content="IpoFly" />
+
+      {/* iOS Splash Screens */}
+        <link rel="apple-touch-startup-image" href="/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" />
+
+        {/* Android Theme */}
+        <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)" />
+
         {/* ✅ Additional favicon links for better compatibility */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -60,6 +75,7 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors">
           <Navbar />
           <main>{children}</main>
+          <PWARegister />
           <Footer />
         </div>
       </body>

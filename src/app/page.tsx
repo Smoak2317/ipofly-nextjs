@@ -1,6 +1,7 @@
 import { fetchAllIPOs, sortIPOsByPriority } from "@/lib/api";
 import Hero from "@/components/Hero";
 import SmartFilters from "@/components/SmartFilters";
+import PullToRefresh from '@/components/PullToRefresh';
 
 export const revalidate = 300;
 
@@ -53,5 +54,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         </div>
       </section>
     </>
+
+
   );
 }

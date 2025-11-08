@@ -1,17 +1,29 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-function SearchBarContent() {
+interface SearchBarProps {
+  autoFocus?: boolean;
+}
+
+function SearchBarContent({ autoFocus = false }: SearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const q = searchParams.get('q');
     if (q) setQuery(q);
   }, [searchParams]);
+
+  // ✅ FIX: Auto-focus when autoFocus prop is true
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -25,20 +37,23 @@ function SearchBarContent() {
   const clearSearch = () => {
     setQuery('');
     router.push('/');
+    // Refocus after clear
+    inputRef.current?.focus();
   };
 
   return (
     <form onSubmit={handleSearch} className="w-full">
       <div className="relative group">
-        {/* Search Icon - Better positioned */}
+        {/* Search Icon */}
         <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none">
           <svg className="w-4 h-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
 
-        {/* Input Field - Compact */}
+        {/* Input Field */}
         <input
+          ref={inputRef}
           type="text"
           placeholder="Search IPO..."
           value={query}
@@ -46,7 +61,7 @@ function SearchBarContent() {
           className="w-full md:w-56 pl-8 pr-8 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/50 transition-all"
         />
 
-        {/* Clear Button - Compact */}
+        {/* Clear Button */}
         {query && (
           <button
             type="button"
@@ -64,6 +79,6 @@ function SearchBarContent() {
   );
 }
 
-export default function SearchBar() {
-  return <SearchBarContent />;
+export default function SearchBar(props: SearchBarProps) {
+  return <SearchBarContent {...props} />;
 }
