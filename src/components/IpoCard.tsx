@@ -83,7 +83,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                 <div className="mb-3">
                   <div className="w-12 h-12 rounded-xl border border-gray-200 dark:border-gray-700 p-1.5 bg-white overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                     <Image
-                      src={`https://ipofly-273428006377.asia-south1.run.app${ipo.logoUrl}`}
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app'}${ipo.logoUrl}`}
                       alt={`${ipo.name} logo`}
                       width={48}
                       height={48}
