@@ -22,6 +22,16 @@ const nextConfig: NextConfig = {
     unoptimized: false,
   },
   reactStrictMode: true,
+  // ✅ Rewrites configuration
+    async rewrites() {
+      return [
+        // Forward only API requests to your backend
+        {
+          source: '/api/:path*',
+          destination: 'https://ipofly-273428006377.asia-south1.run.app/api/:path*',
+        },
+      ];
+    },
 };
 
 export default nextConfig;
