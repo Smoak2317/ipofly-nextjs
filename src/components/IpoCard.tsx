@@ -71,17 +71,17 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
 
   return (
     <Link href={`/ipo/${slug}`}>
-      <article className="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 hover:shadow-2xl hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden">
-        {/* Hover gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300 rounded-2xl" />
+      <article className="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 sm:p-4 hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden">
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300 rounded-xl" />
 
         <div className="relative z-10">
-          {/* Header */}
-          <div className="flex justify-between items-start gap-3 mb-4">
+          {/* Header - Ultra Compact */}
+          <div className="flex justify-between items-start gap-2 mb-2 sm:mb-3">
             <div className="flex-1 min-w-0">
               {ipo.logoUrl && (
-                <div className="mb-3">
-                  <div className="w-12 h-12 rounded-xl border border-gray-200 dark:border-gray-700 p-1.5 bg-white overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="mb-2">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white overflow-hidden shadow-sm">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app'}${ipo.logoUrl}`}
                       alt={`${ipo.name} logo`}
@@ -94,7 +94,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                 </div>
               )}
 
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-1.5">
                 {ipo.name}
               </h3>
 
@@ -123,31 +123,29 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
               </div>
             </div>
 
-            {/* GMP Badge */}
-            <div className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-right shadow-sm ${
+            {/* GMP Badge - Compact */}
+            <div className={`flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-right shadow-sm ${
               isPositive
                 ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-700"
                 : "bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-200 dark:border-red-700"
             }`}>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-0.5 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
-                </svg>
-                GMP
-              </div>
-              <div className={`text-base font-bold ${isPositive ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
+              <div className="text-[9px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-0.5 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+                              </svg>GMP</div>
+              <div className={`text-sm sm:text-base font-bold ${isPositive ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
                 {amountText}
               </div>
               {percentText && (
-                <div className={`text-xs font-semibold ${isPositive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"}`}>
+                <div className={`text-[9px] sm:text-xs font-semibold ${isPositive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"}`}>
                   {percentText}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Details Grid */}
-          <div className="grid grid-cols-2 gap-3 py-3 border-t border-gray-100 dark:border-gray-700">
+          {/* Details Grid - Compact */}
+          <div className="grid grid-cols-2 gap-2 py-2 border-t border-gray-100 dark:border-gray-700">
             {[
               {
                 label: "Issue Price",
@@ -189,25 +187,25 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                 )
               },
             ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-2">
-                {item.icon}
+              <div key={idx} className="flex items-start gap-1.5">
+              {item.icon}
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.label}</div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{item.value}</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-0.5">{item.label}</div>
+                  <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{item.value}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-              </svg>
+          {/* Footer - Compact */}
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-1.5">
+             <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                          </svg>
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Subscription</div>
-                <div className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Subscription</div>
+                <div className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
                   {ipo.subscription || "—"}
                 </div>
               </div>

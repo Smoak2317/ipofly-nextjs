@@ -19,11 +19,16 @@ interface TooltipProps {
 }
 
 export default function GmpSparkChart({ history, isPositive }: GmpSparkChartProps) {
-  const chartData = history?.map((item: GmpHistory) => ({
+  // Sort data from oldest to latest (ascending order by date)
+  const sortedHistory = [...(history || [])].sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+
+  const chartData = sortedHistory.map((item: GmpHistory) => ({
     date: new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
     gmp: parseFloat(item.gmp || '0') || 0,
     fullDate: item.date,
-  })) || [];
+  }));
 
   if (!chartData.length) {
     return (
@@ -55,7 +60,7 @@ export default function GmpSparkChart({ history, isPositive }: GmpSparkChartProp
     <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-lg">
       <div className="mb-4">
         <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">GMP Trend</h4>
-        <p className="text-sm text-slate-600 dark:text-slate-400">Last {chartData.length} days movement</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Last {chartData.length} days movement (Oldest to Latest)</p>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>

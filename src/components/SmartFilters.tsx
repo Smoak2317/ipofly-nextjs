@@ -140,9 +140,9 @@ export default function SmartFilters({
 
   return (
     <div id="ipos">
-      {/* Mobile Filter Toggle Buttons */}
-      <div className="lg:hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-2 gap-3">
+      {/* Mobile Filter - Ultra Compact */}
+      <div className="lg:hidden max-w-7xl mx-auto px-3 py-3">
+        <div className="grid grid-cols-2 gap-2">
           {/* Status Dropdown */}
           {!hideStatus && (
             <div className="relative">
@@ -154,24 +154,22 @@ export default function SmartFilters({
               </div>
               <button
                 onClick={() => setShowMobileFilters(showMobileFilters === 'status' ? '' : 'status')}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl shadow-sm font-semibold text-sm active:scale-95 transition-transform"
+                className="w-full flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm font-semibold text-xs active:scale-95 transition-transform"
               >
-                <span className="flex items-center gap-2 truncate">
+                <span className="flex items-center gap-1.5 truncate">
                   {statusFilter === 'ongoing' && (
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
                   )}
-                  {statusFilters.find(f => f.value === statusFilter)?.icon}
-                  <span className="truncate">
-                    {statusFilters.find(f => f.value === statusFilter)?.label || 'Select'}
-                  </span>
+                  <span className="text-sm">{statusFilters.find(f => f.value === statusFilter)?.icon}</span>
+                  <span className="truncate text-xs">{statusFilters.find(f => f.value === statusFilter)?.label}</span>
                 </span>
-                <svg className={`w-5 h-5 ml-2 transition-transform flex-shrink-0 ${showMobileFilters === 'status' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 ml-1 transition-transform flex-shrink-0 ${showMobileFilters === 'status' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {showMobileFilters === 'status' && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-56 overflow-y-auto">
                   {statusFilters.map(filter => (
                     <button
                       key={filter.value}
@@ -179,21 +177,21 @@ export default function SmartFilters({
                         setStatusFilter(filter.value);
                         setShowMobileFilters('');
                       }}
-                      className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 active:scale-95 ${
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 active:scale-95 ${
                         statusFilter === filter.value
                           ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                       }`}
                     >
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-1.5">
                         {filter.hasLiveDot && (
-                          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
                         )}
-                        {filter.icon}
+                        <span className="text-sm">{filter.icon}</span>
                         <span>{filter.label}</span>
                       </span>
                       {statusFilter === filter.value && (
-                        <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -215,21 +213,19 @@ export default function SmartFilters({
               </div>
               <button
                 onClick={() => setShowMobileFilters(showMobileFilters === 'category' ? '' : 'category')}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-xl shadow-sm font-semibold text-sm active:scale-95 transition-transform"
+                className="w-full flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm font-semibold text-xs active:scale-95 transition-transform"
               >
-                <span className="flex items-center gap-2 truncate">
-                  {categoryFilters.find(f => f.value === categoryFilter)?.icon}
-                  <span className="truncate">
-                    {categoryFilters.find(f => f.value === categoryFilter)?.label || 'Select'}
-                  </span>
+                <span className="flex items-center gap-1.5 truncate">
+                  <span className="text-sm">{categoryFilters.find(f => f.value === categoryFilter)?.icon}</span>
+                  <span className="truncate text-xs">{categoryFilters.find(f => f.value === categoryFilter)?.label}</span>
                 </span>
-                <svg className={`w-5 h-5 ml-2 transition-transform flex-shrink-0 ${showMobileFilters === 'category' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 ml-1 transition-transform flex-shrink-0 ${showMobileFilters === 'category' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {showMobileFilters === 'category' && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-56 overflow-y-auto">
                   {categoryFilters.map(filter => (
                     <button
                       key={filter.value}
@@ -237,18 +233,18 @@ export default function SmartFilters({
                         setCategoryFilter(filter.value);
                         setShowMobileFilters('');
                       }}
-                      className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 active:scale-95 ${
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 active:scale-95 ${
                         categoryFilter === filter.value
                           ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                       }`}
                     >
-                      <span className="flex items-center gap-2">
-                        {filter.icon}
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-sm">{filter.icon}</span>
                         <span>{filter.label}</span>
                       </span>
                       {categoryFilter === filter.value && (
-                        <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -261,9 +257,9 @@ export default function SmartFilters({
         </div>
       </div>
 
-      {/* Desktop Filters */}
-      <div className="hidden lg:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      {/* Desktop Filters - Compact */}
+      <div className="hidden lg:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-wrap gap-6">
           {/* Status Filters */}
           {!hideStatus && (
             <div className="flex-1">
@@ -280,8 +276,8 @@ export default function SmartFilters({
                     onClick={() => setStatusFilter(filter.value)}
                     className={getStatusButtonClass(filter.value, statusFilter === filter.value)}
                   >
-                    {filter.hasLiveDot && (
-                      <span className="w-2 h-2 bg-white rounded-full animate-pulse flex-shrink-0" />
+                    {filter.hasLiveDot && statusFilter === filter.value && (
+                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse flex-shrink-0" />
                     )}
                     {filter.icon}
                     <span>{filter.label}</span>
@@ -307,7 +303,7 @@ export default function SmartFilters({
                     onClick={() => setCategoryFilter(filter.value)}
                     className={getCategoryButtonClass(filter.value, categoryFilter === filter.value)}
                   >
-                    {filter.icon}
+                    <span className="text-sm">{filter.icon}</span>
                     <span>{filter.label}</span>
                   </button>
                 ))}
@@ -317,15 +313,15 @@ export default function SmartFilters({
         </div>
       </div>
 
-      {/* Results Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Results Section - Compact Spacing */}
+      <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
         {filteredIpos.length === 0 ? (
-          <div className="text-center py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-            <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700">
+            <svg className="w-16 h-16 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">No IPOs Found</h2>
-            <p className="text-gray-600 dark:text-gray-400">Try adjusting your filters</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">No IPOs Found</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Try adjusting your filters</p>
           </div>
         ) : (
           <ClientPagination allIpos={filteredIpos} />
