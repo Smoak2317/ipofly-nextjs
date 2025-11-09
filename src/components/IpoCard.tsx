@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IPO } from '@/types/ipo';
@@ -16,40 +15,8 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
   const { amountText, percentText, isPositive } = parseGMP(ipo.gmp);
   const category = normalizeCategory(ipo.category);
   const status = normalizeStatus(ipo.status);
-  const [isInWishlist, setIsInWishlist] = useState(false);
 
-  useEffect(() => {
-    checkWishlist();
-  }, [ipo._id]);
 
-  const checkWishlist = () => {
-    const wishlist = localStorage.getItem('watchlist');
-    if (wishlist) {
-      try {
-        const items: IPO[] = JSON.parse(wishlist);
-        setIsInWishlist(items.some(item => item._id === ipo._id));
-      } catch (error) {
-        // Silent fail
-      }
-    }
-  };
-
-  const toggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const wishlist = localStorage.getItem('watchlist');
-    let items: IPO[] = wishlist ? JSON.parse(wishlist) : [];
-
-    if (isInWishlist) {
-      items = items.filter(item => item._id !== ipo._id);
-    } else {
-      items.push(ipo);
-    }
-
-    localStorage.setItem('watchlist', JSON.stringify(items));
-    setIsInWishlist(!isInWishlist);
-  };
 
   const getStatusConfig = (status: string) => {
     const configs: Record<string, { bg: string; text: string; icon: JSX.Element }> = {
@@ -107,21 +74,6 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
   return (
     <Link href={`/ipo/${slug}`}>
       <article className="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 sm:p-4 hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden">
-        {/* Wishlist Button */}
-        <button
-          onClick={toggleWishlist}
-          className="absolute top-2 right-2 z-10 p-2 rounded-lg bg-white dark:bg-gray-700 shadow-md hover:scale-110 transition-transform"
-          title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-        >
-          <svg
-            className={`w-5 h-5 ${isInWishlist ? 'fill-yellow-500 text-yellow-500' : 'fill-none text-gray-400'}`}
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-          </svg>
-        </button>
 
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300 rounded-xl" />
 
@@ -201,72 +153,73 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                 icon: (
                   <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                  </svg>
-                )
-              },
-              {
-                label: "Lot Size",
-                value: ipo.lotSize,
-                icon: (
-                  <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z" />
-                    <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z" />
-                    <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z" />
-                  </svg>
-                )
-              },
-              {
-                label: "Open Date",
-                value: ipo.issueOpenDate,
-                icon: (
-                  <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
-                )
-              },
-              {
-                label: "Close Date",
-                value: ipo.issueCloseDate,
-                icon: (
-                  <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
-                )
-              },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-1.5">
-                {item.icon}
-                <div className="flex-1 min-w-0">
-                  <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-0.5">{item.label}</div>
-                  <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{item.value}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0
+                    0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                                      </svg>
+                                    )
+                                  },
+                                  {
+                                    label: "Lot Size",
+                                    value: ipo.lotSize,
+                                    icon: (
+                                      <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z" />
+                                        <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z" />
+                                        <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z" />
+                                      </svg>
+                                    )
+                                  },
+                                  {
+                                    label: "Open Date",
+                                    value: ipo.issueOpenDate,
+                                    icon: (
+                                      <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                      </svg>
+                                    )
+                                  },
+                                  {
+                                    label: "Close Date",
+                                    value: ipo.issueCloseDate,
+                                    icon: (
+                                      <svg className="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                      </svg>
+                                    )
+                                  },
+                                ].map((item, idx) => (
+                                  <div key={idx} className="flex items-start gap-1.5">
+                                    {item.icon}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-0.5">{item.label}</div>
+                                      <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{item.value}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-              </svg>
-              <div>
-                <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Subscription</div>
-                <div className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
-                  {ipo.subscription || "—"}
-                </div>
-              </div>
-            </div>
+                              <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                                <div className="flex items-center gap-1.5">
+                                  <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                                  </svg>
+                                  <div>
+                                    <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Subscription</div>
+                                    <div className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                      {ipo.subscription || "—"}
+                                    </div>
+                                  </div>
+                                </div>
 
-            <div className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 group-hover:gap-3 transition-all">
-              <span>View Details</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </article>
-    </Link>
-  );
-}
+                                <div className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 group-hover:gap-3 transition-all">
+                                  <span>View Details</span>
+                                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                        </Link>
+                      );
+                    }

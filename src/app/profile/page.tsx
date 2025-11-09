@@ -24,7 +24,8 @@ export default function ProfilePage() {
       const userData = JSON.parse(userString);
       setUser(userData);
       setName(userData.name || '');
-    } catch (error) {
+    } catch {
+      // If parsing fails, redirect to login
       router.push('/login');
     }
   }, [router]);
