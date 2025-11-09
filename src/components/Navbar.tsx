@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import SearchBar from './SearchBar';
@@ -13,6 +13,14 @@ export default function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string; picture?: string } | null>(null);
+
+  // Refs for click-outside detection
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const profileButtonRef = useRef<HTMLButtonElement>(null);
 
   const checkAuthState = useCallback(() => {
     const authToken = localStorage.getItem('authToken');
@@ -35,20 +43,16 @@ export default function Navbar() {
     }
   }, []);
 
-  // Check auth on mount
   useEffect(() => {
     checkAuthState();
   }, [checkAuthState]);
 
-  // Listen for storage events (from other tabs or components)
   useEffect(() => {
     const handleStorageChange = () => {
       checkAuthState();
     };
 
     window.addEventListener('storage', handleStorageChange);
-
-    // Also listen for custom auth events
     window.addEventListener('authStateChanged', handleStorageChange);
 
     return () => {
@@ -56,6 +60,71 @@ export default function Navbar() {
       window.removeEventListener('authStateChanged', handleStorageChange);
     };
   }, [checkAuthState]);
+
+  // ✅ Click-outside to close menus
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // Close mobile menu if clicked outside
+      if (
+        mobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(target) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(target)
+      ) {
+        setMobileMenuOpen(false);
+      }
+
+      // Close mobile search if clicked outside
+      if (
+        mobileSearchOpen &&
+        mobileSearchRef.current &&
+        !mobileSearchRef.current.contains(target) &&
+        searchButtonRef.current &&
+        !searchButtonRef.current.contains(target)
+      ) {
+        setMobileSearchOpen(false);
+      }
+
+      // Close profile menu if clicked outside
+      if (
+        showProfileMenu &&
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(target) &&
+        profileButtonRef.current &&
+        !profileButtonRef.current.contains(target)
+      ) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [mobileMenuOpen, mobileSearchOpen, showProfileMenu]);
+
+  // ✅ Close menus on scroll (only if already open)
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDelta = Math.abs(currentScrollY - lastScrollY);
+
+      // Only close if user scrolled more than 50px
+      if (scrollDelta > 50) {
+        if (mobileMenuOpen) setMobileMenuOpen(false);
+        if (mobileSearchOpen) setMobileSearchOpen(false);
+        if (showProfileMenu) setShowProfileMenu(false);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [mobileMenuOpen, mobileSearchOpen, showProfileMenu]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -65,10 +134,7 @@ export default function Navbar() {
     setUser(null);
     setShowProfileMenu(false);
 
-    // Trigger event for other components
     window.dispatchEvent(new Event('storage'));
-
-    // Redirect to home
     window.location.href = '/';
   };
 
@@ -80,6 +146,7 @@ export default function Navbar() {
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 lg:flex-none">
             {/* Mobile Menu Button */}
             <button
+              ref={menuButtonRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
               aria-label="Toggle menu"
@@ -145,6 +212,7 @@ export default function Navbar() {
 
             {/* Mobile Search Button */}
             <button
+              ref={searchButtonRef}
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
               className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               aria-label="Toggle search"
@@ -164,6 +232,7 @@ export default function Navbar() {
               {isLoggedIn && user ? (
                 <>
                   <button
+                    ref={profileButtonRef}
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                     className="flex items-center gap-1.5 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     aria-label="Profile menu"
@@ -184,69 +253,63 @@ export default function Navbar() {
                   </button>
 
                   {showProfileMenu && (
-                    <>
-                      {/* Backdrop */}
-                      <div
-                        className="fixed inset-0 z-40"
-                        onClick={() => setShowProfileMenu(false)}
-                      />
-
-                      {/* Menu */}
-                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-slide-down z-50">
-                        {/* User Info */}
-                        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                          <div className="flex items-center gap-3">
-                            {user.picture ? (
-                              <Image
-                                src={user.picture}
-                                alt={user.name}
-                                width={40}
-                                height={40}
-                                className="w-10 h-10 rounded-full"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">
-                                {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                                {user.name}
-                              </p>
-                              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                {user.email}
-                              </p>
+                    <div
+                      ref={profileMenuRef}
+                      className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-slide-down z-50"
+                    >
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-3">
+                          {user.picture ? (
+                            <Image
+                              src={user.picture}
+                              alt={user.name}
+                              width={40}
+                              height={40}
+                              className="w-10 h-10 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">
+                              {user.name?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                              {user.name}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                              {user.email}
+                            </p>
                           </div>
                         </div>
-
-                        <Link
-                          href="/profile"
-                          className="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
-                          onClick={() => setShowProfileMenu(false)}
-                        >
-                          <span className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                            </svg>
-                            My Profile
-                          </span>
-                        </Link>
-
-                        <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                        <button
-                          onClick={handleLogout}
-                          className="w-full text-left px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                        >
-                          <span className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-                            </svg>
-                            Logout
-                          </span>
-                        </button>
                       </div>
-                    </>
+
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                        onClick={() => setShowProfileMenu(false)}
+                      >
+                        <span className="flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                          </svg>
+                          My Profile
+                        </span>
+                      </Link>
+
+                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+                          </svg>
+                          Logout
+                        </span>
+                      </button>
+                    </div>
                   )}
                 </>
               ) : (
@@ -266,18 +329,18 @@ export default function Navbar() {
 
         {/* Mobile Search Bar */}
         {mobileSearchOpen && (
-          <div className="md:hidden py-2 border-t border-gray-200 dark:border-gray-800 animate-slide-down">
+          <div ref={mobileSearchRef} className="md:hidden py-2 border-t border-gray-200 dark:border-gray-800 animate-slide-down">
             <Suspense fallback={
               <div className="w-full h-9 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
             }>
-              <SearchBar />
+              <SearchBar autoFocus={true} />
             </Suspense>
           </div>
         )}
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-2 border-t border-gray-200 dark:border-gray-800 animate-slide-down">
+          <div ref={mobileMenuRef} className="lg:hidden py-2 border-t border-gray-200 dark:border-gray-800 animate-slide-down">
             <div className="flex flex-col gap-1">
               <Link
                 href="/mainboard"
