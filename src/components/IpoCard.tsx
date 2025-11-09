@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IPO } from '@/types/ipo';
@@ -15,6 +16,40 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
   const { amountText, percentText, isPositive } = parseGMP(ipo.gmp);
   const category = normalizeCategory(ipo.category);
   const status = normalizeStatus(ipo.status);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  useEffect(() => {
+    checkWishlist();
+  }, [ipo._id]);
+
+  const checkWishlist = () => {
+    const wishlist = localStorage.getItem('watchlist');
+    if (wishlist) {
+      try {
+        const items: IPO[] = JSON.parse(wishlist);
+        setIsInWishlist(items.some(item => item._id === ipo._id));
+      } catch (error) {
+        // Silent fail
+      }
+    }
+  };
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const wishlist = localStorage.getItem('watchlist');
+    let items: IPO[] = wishlist ? JSON.parse(wishlist) : [];
+
+    if (isInWishlist) {
+      items = items.filter(item => item._id !== ipo._id);
+    } else {
+      items.push(ipo);
+    }
+
+    localStorage.setItem('watchlist', JSON.stringify(items));
+    setIsInWishlist(!isInWishlist);
+  };
 
   const getStatusConfig = (status: string) => {
     const configs: Record<string, { bg: string; text: string; icon: JSX.Element }> = {
@@ -72,11 +107,25 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
   return (
     <Link href={`/ipo/${slug}`}>
       <article className="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 sm:p-4 hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden">
-        {/* Hover overlay */}
+        {/* Wishlist Button */}
+        <button
+          onClick={toggleWishlist}
+          className="absolute top-2 right-2 z-10 p-2 rounded-lg bg-white dark:bg-gray-700 shadow-md hover:scale-110 transition-transform"
+          title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <svg
+            className={`w-5 h-5 ${isInWishlist ? 'fill-yellow-500 text-yellow-500' : 'fill-none text-gray-400'}`}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </button>
+
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300 rounded-xl" />
 
         <div className="relative z-10">
-          {/* Header - Ultra Compact */}
           <div className="flex justify-between items-start gap-2 mb-2 sm:mb-3">
             <div className="flex-1 min-w-0">
               {ipo.logoUrl && (
@@ -123,16 +172,16 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
               </div>
             </div>
 
-            {/* GMP Badge - Compact */}
             <div className={`flex-shrink-0 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-right shadow-sm ${
               isPositive
                 ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-700"
                 : "bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/30 dark:to-orange-900/30 border border-red-200 dark:border-red-700"
             }`}>
               <div className="text-[9px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-0.5 flex items-center gap-1">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
-                              </svg>GMP</div>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
+                </svg>GMP
+              </div>
               <div className={`text-sm sm:text-base font-bold ${isPositive ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>
                 {amountText}
               </div>
@@ -144,7 +193,6 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
             </div>
           </div>
 
-          {/* Details Grid - Compact */}
           <div className="grid grid-cols-2 gap-2 py-2 border-t border-gray-100 dark:border-gray-700">
             {[
               {
@@ -188,7 +236,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
               },
             ].map((item, idx) => (
               <div key={idx} className="flex items-start gap-1.5">
-              {item.icon}
+                {item.icon}
                 <div className="flex-1 min-w-0">
                   <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-0.5">{item.label}</div>
                   <div className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{item.value}</div>
@@ -197,12 +245,11 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
             ))}
           </div>
 
-          {/* Footer - Compact */}
           <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-1.5">
-             <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                          </svg>
+              <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+              </svg>
               <div>
                 <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Subscription</div>
                 <div className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">

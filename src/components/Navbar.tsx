@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import SearchBar from './SearchBar';
@@ -14,8 +14,7 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string; picture?: string } | null>(null);
 
-  // Check login status on mount
-  useEffect(() => {
+  const checkAuthState = useCallback(() => {
     const authToken = localStorage.getItem('authToken');
     const userString = localStorage.getItem('user');
 
@@ -25,12 +24,38 @@ export default function Navbar() {
         setUser(userData);
         setIsLoggedIn(true);
       } catch (error) {
-        console.error('Error parsing user data:', error);
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
+        setIsLoggedIn(false);
+        setUser(null);
       }
+    } else {
+      setIsLoggedIn(false);
+      setUser(null);
     }
   }, []);
+
+  // Check auth on mount
+  useEffect(() => {
+    checkAuthState();
+  }, [checkAuthState]);
+
+  // Listen for storage events (from other tabs or components)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      checkAuthState();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom auth events
+    window.addEventListener('authStateChanged', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('authStateChanged', handleStorageChange);
+    };
+  }, [checkAuthState]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -39,6 +64,12 @@ export default function Navbar() {
     setIsLoggedIn(false);
     setUser(null);
     setShowProfileMenu(false);
+
+    // Trigger event for other components
+    window.dispatchEvent(new Event('storage'));
+
+    // Redirect to home
+    window.location.href = '/';
   };
 
   return (
@@ -47,7 +78,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 gap-2">
           {/* LEFT: Mobile Menu + Desktop Nav */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 lg:flex-none">
-            {/* Mobile Menu Button - Compact */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
@@ -96,14 +127,14 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* CENTER: Logo - Absolutely centered */}
+          {/* CENTER: Logo */}
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <Logo size="3xl" showText={false} />
           </div>
 
-          {/* RIGHT: Search + Dark Mode + Profile - Compact */}
+          {/* RIGHT: Search + Dark Mode + Profile */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 justify-end">
-            {/* Desktop Search - Compact */}
+            {/* Desktop Search */}
             <div className="hidden md:block">
               <Suspense fallback={
                 <div className="w-48 h-9 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
@@ -112,7 +143,7 @@ export default function Navbar() {
               </Suspense>
             </div>
 
-            {/* Mobile Search Button - Compact */}
+            {/* Mobile Search Button */}
             <button
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
               className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -123,12 +154,12 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Dark Mode Toggle - Hidden on Mobile */}
+            {/* Dark Mode Toggle */}
             <div className="hidden sm:flex items-center">
               <DarkModeToggle />
             </div>
 
-            {/* Profile Section - Optimized */}
+            {/* Profile Section */}
             <div className="relative">
               {isLoggedIn && user ? (
                 <>
@@ -153,71 +184,80 @@ export default function Navbar() {
                   </button>
 
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-slide-down">
-                      {/* User Info */}
-                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-3">
-                          {user.picture ? (
-                            <Image
-                              src={user.picture}
-                              alt={user.name}
-                              width={40}
-                              height={40}
-                              className="w-10 h-10 rounded-full"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">
-                              {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                    <>
+                      {/* Backdrop */}
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowProfileMenu(false)}
+                      />
+
+                      {/* Menu */}
+                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-slide-down z-50">
+                        {/* User Info */}
+                        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-3">
+                            {user.picture ? (
+                              <Image
+                                src={user.picture}
+                                alt={user.name}
+                                width={40}
+                                height={40}
+                                className="w-10 h-10 rounded-full"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">
+                                {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                {user.name}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                {user.email}
+                              </p>
                             </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                              {user.name}
-                            </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                              {user.email}
-                            </p>
                           </div>
                         </div>
-                      </div>
 
-                      <Link
-                        href="/profile"
-                        className="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <span className="flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                          </svg>
-                          My Profile
-                        </span>
-                      </Link>
-                      <Link
-                        href="/watchlist"
-                        className="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
-                        onClick={() => setShowProfileMenu(false)}
-                      >
-                        <span className="flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                          Watchlist
-                        </span>
-                      </Link>
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      >
-                        <span className="flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-                          </svg>
-                          Logout
-                        </span>
-                      </button>
-                    </div>
+                        <Link
+                          href="/profile"
+                          className="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                          onClick={() => setShowProfileMenu(false)}
+                        >
+                          <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                            My Profile
+                          </span>
+                        </Link>
+                        <Link
+                          href="/watchlist"
+                          className="block px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                          onClick={() => setShowProfileMenu(false)}
+                        >
+                          <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            Watchlist
+                          </span>
+                        </Link>
+                        <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+                            </svg>
+                            Logout
+                          </span>
+                        </button>
+                      </div>
+                    </>
                   )}
                 </>
               ) : (
@@ -235,7 +275,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Search Bar - Compact */}
+        {/* Mobile Search Bar */}
         {mobileSearchOpen && (
           <div className="md:hidden py-2 border-t border-gray-200 dark:border-gray-800 animate-slide-down">
             <Suspense fallback={
@@ -246,7 +286,7 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Mobile Menu - Compact */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden py-2 border-t border-gray-200 dark:border-gray-800 animate-slide-down">
             <div className="flex flex-col gap-1">

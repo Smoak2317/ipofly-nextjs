@@ -1,13 +1,10 @@
-// src/lib/api.ts - FIXED VERSION
+// src/lib/api.ts
 import { IPO, ApiResponse } from '@/types/ipo';
 
-// ✅ FIXED: Use the correct API URL with fallback
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function fetchAllIPOs(): Promise<IPO[]> {
   try {
-
-
     const response = await fetch(`${API_URL}/api/ipos`, {
       next: { revalidate: 300 },
       headers: {
@@ -16,34 +13,18 @@ export async function fetchAllIPOs(): Promise<IPO[]> {
       },
     });
 
-    console.log('📡 Response status:', response.status);
-
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`❌ Failed to fetch IPOs: ${response.status}`, errorText);
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const data: ApiResponse = await response.json();
-    console.log('✅ Received data:', {
-      success: data.success,
-      count: Array.isArray(data.data) ? data.data.length : 0,
-    });
 
-    if (!data.success) {
-      console.error('❌ API returned success=false:', data.message);
-      throw new Error(data.message || 'API returned unsuccessful response');
-    }
-
-    if (!Array.isArray(data.data)) {
-      console.error('❌ API did not return an array:', typeof data.data);
+    if (!data.success || !Array.isArray(data.data)) {
       throw new Error('Invalid API response format');
     }
 
     return data.data;
   } catch (error) {
-    console.error('❌ Error fetching IPOs:', error);
-    // Re-throw the error so pages can handle it
     throw error;
   }
 }
@@ -53,7 +34,6 @@ export async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
     const ipos = await fetchAllIPOs();
     return ipos.find((ipo) => slugify(ipo.name) === slug) || null;
   } catch (error) {
-    console.error('❌ Error fetching IPO by slug:', error);
     throw error;
   }
 }
@@ -61,11 +41,8 @@ export async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
 export async function fetchIPOsByCategory(category: string): Promise<IPO[]> {
   try {
     const ipos = await fetchAllIPOs();
-    const filtered = ipos.filter((ipo) => normalizeCategory(ipo.category) === category);
-    console.log(`✅ Filtered ${category} IPOs:`, filtered.length);
-    return filtered;
+    return ipos.filter((ipo) => normalizeCategory(ipo.category) === category);
   } catch (error) {
-    console.error('❌ Error fetching IPOs by category:', error);
     throw error;
   }
 }
@@ -73,11 +50,8 @@ export async function fetchIPOsByCategory(category: string): Promise<IPO[]> {
 export async function fetchIPOsByStatus(status: string): Promise<IPO[]> {
   try {
     const ipos = await fetchAllIPOs();
-    const filtered = ipos.filter((ipo) => normalizeStatus(ipo.status) === status);
-    console.log(`✅ Filtered ${status} IPOs:`, filtered.length);
-    return filtered;
+    return ipos.filter((ipo) => normalizeStatus(ipo.status) === status);
   } catch (error) {
-    console.error('❌ Error fetching IPOs by status:', error);
     throw error;
   }
 }
