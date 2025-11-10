@@ -191,6 +191,12 @@ export default function Navbar() {
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                 </span>
               </Link>
+              <Link
+                href="/heatmap"
+                className="px-3 py-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all"
+              >
+                Heat Map
+              </Link>
             </div>
           </div>
 
@@ -370,6 +376,13 @@ export default function Navbar() {
               >
                 <span>Live IPOs</span>
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              </Link>
+              <Link
+                href="/heatmap"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all"
+              >
+                IPO Heat Map
               </Link>
               <div className="my-1 border-t border-gray-200 dark:border-gray-800"></div>
               <div className="px-3 py-2 flex items-center justify-between">

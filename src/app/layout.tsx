@@ -1,6 +1,4 @@
-// ============================================
-// src/app/layout.tsx - FIXED with Favicon
-// ============================================
+// src/app/layout.tsx - UPDATE THIS FILE
 
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
@@ -48,21 +46,37 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-      {/* PWA Meta Tags */}
-      <link rel="manifest" href="/manifest.json" />
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      <meta name="apple-mobile-web-app-title" content="IpoFly" />
+        {/* Anti-Flicker Script - Must be before any content */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
 
-      {/* iOS Splash Screens */}
+        {/* PWA Meta Tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="IpoFly" />
+
+        {/* iOS Splash Screens */}
         <link rel="apple-touch-startup-image" href="/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" />
 
         {/* Android Theme */}
         <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)" />
 
-        {/* ✅ Additional favicon links for better compatibility */}
+        {/* Favicon links */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />

@@ -1,3 +1,4 @@
+// src/components/DarkModeToggle.tsx - OPTIMIZED
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -7,28 +8,32 @@ export default function DarkModeToggle() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Initialize immediately
+    const checkDark = document.documentElement.classList.contains('dark');
+    setIsDark(checkDark);
     setMounted(true);
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
   }, []);
 
   const toggle = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
+    const newDark = !isDark;
+    setIsDark(newDark);
+
+    if (newDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
+  // Show nothing during SSR to prevent hydration mismatch
   if (!mounted) {
-    return (
-      <div className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 w-11 h-11 animate-pulse" />
-    );
+    return <div className="w-11 h-11" />;
   }
 
   return (
     <button
       onClick={toggle}
-      className="relative p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all group overflow-hidden shadow-sm hover:shadow-md"
+      className="relative p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors group overflow-hidden"
       aria-label="Toggle dark mode"
     >
       {/* Sun Icon */}

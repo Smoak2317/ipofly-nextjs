@@ -1,3 +1,4 @@
+// src/components/logo.tsx - OPTIMIZED
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -14,7 +15,7 @@ const sizeMap = {
   md: { container: 'w-14 h-14', image: 56 },
   lg: { container: 'w-20 h-20', image: 80 },
   xl: { container: 'w-24 h-24', image: 96 },
-  '2xl': { container: 'w-32 h-32', image: 128 }, // ✅ New large size
+  '2xl': { container: 'w-32 h-32', image: 128 },
   '3xl': { container: 'w-40 h-40', image: 160 },
 };
 
@@ -23,17 +24,15 @@ export default function Logo({ size = 'md', showText = true }: LogoProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Check immediately without delay
+    setIsDark(document.documentElement.classList.contains('dark'));
     setMounted(true);
 
-    // Check initial theme
-    const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-
-    checkTheme();
-
     // Watch for theme changes
-    const observer = new MutationObserver(checkTheme);
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
@@ -44,26 +43,14 @@ export default function Logo({ size = 'md', showText = true }: LogoProps) {
 
   const { container, image } = sizeMap[size];
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return (
-      <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-        <div className={`relative ${container} bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse`} />
-        {showText && (
-          <div>
-            <div className="text-xl font-bold text-gray-900 dark:text-white">IpoFly</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">Live GMP Tracker</div>
-          </div>
-        )}
-      </Link>
-    );
-  }
+  // Render with default logo to prevent flicker
+  const logoSrc = mounted ? (isDark ? "/logo-dark.png" : "/logo-light.png") : "/logo-light.png";
 
   return (
     <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
       <div className={`relative ${container} flex-shrink-0`}>
         <Image
-          src={isDark ? "/logo-dark.png" : "/logo-light.png"}
+          src={logoSrc}
           alt="IpoFly Logo"
           width={image}
           height={image}
