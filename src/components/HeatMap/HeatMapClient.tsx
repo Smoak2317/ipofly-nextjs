@@ -1,9 +1,9 @@
-// src/components/HeatMapClient.tsx
+// src/components/HeatMap/HeatMapClient.tsx
 'use client';
 
 import { useState, useMemo } from 'react';
 import { IPO } from '@/types/ipo';
-import { parseGMP } from '@/lib/api';
+import { parseGMP, normalizeCategory, normalizeStatus } from '@/lib/api';
 import HeatMapFilters from './HeatMapFilters';
 import HeatMapTile from './HeatMapTile';
 import HeatMapTooltip from './HeatMapTooltip';
@@ -16,12 +16,14 @@ interface HeatMapClientProps {
 export default function HeatMapClient({ ipos }: HeatMapClientProps) {
   const [selectedSector, setSelectedSector] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('mainboard'); // Default to mainboard
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedPerformance, setSelectedPerformance] = useState<string>('all');
   const [hoveredIPO, setHoveredIPO] = useState<IPO | null>(null);
   const [selectedIPO, setSelectedIPO] = useState<IPO | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Extract sectors from company descriptions and categories
+  // Extract sectors
   const sectors = useMemo(() => {
     const sectorSet = new Set<string>();
 
@@ -74,7 +76,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
     return ['all', ...Array.from(sectorSet).sort()];
   }, [ipos]);
 
-  // Extract months from issue dates
+  // Extract months
   const months = useMemo(() => {
     const monthSet = new Set<string>();
 
@@ -96,6 +98,12 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
       return new Date(a).getTime() - new Date(b).getTime();
     })];
   }, [ipos]);
+
+  // Categories
+  const categories = ['all', 'mainboard', 'sme'];
+
+  // Statuses
+  const statuses = ['all', 'upcoming', 'ongoing', 'closed', 'listed', 'allotted'];
 
   // Get sector for an IPO
   const getIPOSector = (ipo: IPO): string => {
@@ -120,6 +128,18 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
   // Filter IPOs
   const filteredIPOs = useMemo(() => {
     return ipos.filter(ipo => {
+      // Category filter
+      if (selectedCategory !== 'all') {
+        const ipoCategory = normalizeCategory(ipo.category);
+        if (ipoCategory !== selectedCategory) return false;
+      }
+
+      // Status filter
+      if (selectedStatus !== 'all') {
+        const ipoStatus = normalizeStatus(ipo.status);
+        if (ipoStatus !== selectedStatus) return false;
+      }
+
       // Sector filter
       if (selectedSector !== 'all') {
         const ipoSector = getIPOSector(ipo);
@@ -137,25 +157,20 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
         }
       }
 
-      // Performance filter
+      // Performance filter (3 categories: High, Moderate, Low)
       if (selectedPerformance !== 'all') {
         const { percentText } = parseGMP(ipo.gmp);
         const percentMatch = percentText?.match(/\(([-+]?\d+\.?\d*)/);
         const percent = percentMatch ? parseFloat(percentMatch[1]) : 0;
 
-        if (selectedPerformance === 'exceptional' && percent < 100) return false;
-        if (selectedPerformance === 'excellent' && (percent < 50 || percent >= 100)) return false;
-        if (selectedPerformance === 'very-good' && (percent < 25 || percent >= 50)) return false;
-        if (selectedPerformance === 'good' && (percent < 10 || percent >= 25)) return false;
-        if (selectedPerformance === 'moderate' && (percent < 0 || percent >= 10)) return false;
-        if (selectedPerformance === 'slightly-negative' && (percent < -10 || percent >= 0)) return false;
-        if (selectedPerformance === 'negative' && (percent < -25 || percent >= -10)) return false;
-        if (selectedPerformance === 'very-negative' && percent >= -25) return false;
+        if (selectedPerformance === 'high' && percent < 50) return false;
+        if (selectedPerformance === 'moderate' && (percent < 0 || percent >= 50)) return false;
+        if (selectedPerformance === 'low' && percent >= 0) return false;
       }
 
       return true;
     });
-  }, [ipos, selectedSector, selectedMonth, selectedPerformance]);
+  }, [ipos, selectedSector, selectedMonth, selectedCategory, selectedStatus, selectedPerformance]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
@@ -171,11 +186,17 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
       <HeatMapFilters
         sectors={sectors}
         months={months}
+        categories={categories}
+        statuses={statuses}
         selectedSector={selectedSector}
         selectedMonth={selectedMonth}
+        selectedCategory={selectedCategory}
+        selectedStatus={selectedStatus}
         selectedPerformance={selectedPerformance}
         onSectorChange={setSelectedSector}
         onMonthChange={setSelectedMonth}
+        onCategoryChange={setSelectedCategory}
+        onStatusChange={setSelectedStatus}
         onPerformanceChange={setSelectedPerformance}
         onExport={handleExport}
       />
@@ -198,7 +219,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
           </div>
         ) : (
           <div
-            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-3"
+            className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-3 auto-rows-min"
             onMouseMove={handleMouseMove}
           >
             {filteredIPOs.map((ipo) => (
