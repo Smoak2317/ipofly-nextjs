@@ -1,6 +1,6 @@
 // src/app/heatmap/page.tsx
 import { fetchAllIPOs, sortIPOsByPriority } from "@/lib/api";
-import HeatMapClient from "@/components/HeatMapClient";
+import HeatMapClient from "@/components/HeatMap/HeatMapClient";
 import Link from "next/link";
 
 export const revalidate = 300;
