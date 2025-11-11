@@ -1,8 +1,8 @@
-// src/components/HeatMap/HeatMapTile.tsx
+// src/components/HeatMap/HeatMapTile.tsx - FIXED CLICK HANDLER
 'use client';
 
 import { IPO } from '@/types/ipo';
-import { parseGMP, normalizeCategory, normalizeStatus, slugify } from '@/lib/api';
+import { parseGMP, normalizeStatus, slugify } from '@/lib/api';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -15,6 +15,11 @@ interface HeatMapTileProps {
 export default function HeatMapTile({ ipo, onHover, onClick }: HeatMapTileProps) {
   const { percentText } = parseGMP(ipo.gmp);
   const status = normalizeStatus(ipo.status);
+  const slug = slugify(ipo.name || 'unknown');
+
+  // Safe AI analysis access
+  const aiAnalysis = ipo.aiAnalysis;
+  const hasAIAnalysis = !!aiAnalysis && typeof aiAnalysis === 'object';
 
   // Get tile color and size based on GMP percentage (3 colors only: High, Moderate, Low)
   const getGMPStyle = () => {
@@ -70,57 +75,74 @@ export default function HeatMapTile({ ipo, onHover, onClick }: HeatMapTileProps)
 
   const style = getGMPStyle();
 
+  // Handle click
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('HeatMapTile clicked:', ipo.name);
+    onClick(ipo);
+  };
+
   return (
-    <Link
-      href={`/ipo/${slugify(ipo.name)}`}
-      className={`group relative bg-gradient-to-br ${style.bg} ${style.border} ${style.size} border-2 rounded-lg p-3 sm:p-4 transition-all duration-200 hover:scale-105 ${style.glow} hover:shadow-xl cursor-pointer overflow-hidden flex flex-col items-center justify-center min-h-[120px] sm:min-h-[140px]`}
+    <div
+      className={`group relative bg-gradient-to-br ${style.bg} ${style.border} ${style.size} border-2 rounded-lg p-2 sm:p-3 transition-all duration-200 hover:scale-105 ${style.glow} hover:shadow-xl cursor-pointer overflow-hidden flex flex-col items-center justify-center min-h-[80px] sm:min-h-[100px]`}
       onMouseEnter={() => onHover(ipo)}
       onMouseLeave={() => onHover(null)}
-      onClick={(e) => {
-        e.preventDefault();
-        onClick(ipo);
-      }}
+      onClick={handleClick}
     >
       {/* Shine effect on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center gap-2 w-full h-full">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-1 w-full h-full p-1">
         {/* Logo */}
         {ipo.logoUrl && (
-          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-lg bg-white/90 p-1.5 shadow-sm flex-shrink-0">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded bg-white/90 p-0.5 shadow-sm flex-shrink-0 mb-1">
             <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app'}${ipo.logoUrl}`}
               alt={`${ipo.name} logo`}
-              width={56}
-              height={56}
+              width={32}
+              height={32}
               className="w-full h-full object-contain"
             />
           </div>
         )}
 
         {/* Company Name - Always visible, word-wrap enabled */}
-        <h3 className={`${style.fontSize} font-bold text-center line-clamp-3 ${style.text} group-hover:underline px-2 break-words w-full`}>
+        <h3 className={`${style.fontSize} font-bold text-center line-clamp-2 ${style.text} group-hover:underline px-1 break-words w-full leading-tight`}>
           {ipo.name}
         </h3>
 
         {/* Percentage */}
         {percentText && (
-          <div className={`${style.fontSize} font-bold ${style.text} whitespace-nowrap`}>
+          <div className={`${style.fontSize === 'text-base sm:text-lg' ? 'text-sm' : 'text-xs'} font-bold ${style.text} whitespace-nowrap mt-1`}>
             {percentText}
+          </div>
+        )}
+
+        {/* AI Score Badge - Small and subtle */}
+        {hasAIAnalysis && (
+          <div className="absolute top-1 right-1">
+            <div className={`px-1 py-0.5 rounded text-[8px] font-bold ${
+              aiAnalysis.score >= 70 ? 'bg-green-500 text-white' :
+              aiAnalysis.score >= 50 ? 'bg-yellow-500 text-gray-900' :
+              'bg-red-500 text-white'
+            }`}>
+              {aiAnalysis.score}
+            </div>
           </div>
         )}
 
         {/* Status Badge - Blinking red dot for ongoing */}
         {status === 'ongoing' && (
-          <div className="absolute top-2 right-2 flex items-center gap-1">
-            <span className="relative flex h-3 w-3">
+          <div className="absolute top-1 left-1">
+            <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 }

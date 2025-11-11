@@ -1,3 +1,4 @@
+// src/components/IpoDetailClient.tsx - FIXED VERSION
 // ============================================
 // src/components/IpoDetailClient.tsx - MOBILE OPTIMIZED
 // ============================================
@@ -8,7 +9,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { IPO } from '@/types/ipo';
-import { parseGMP, normalizeCategory } from '@/lib/api';
+import { parseGMP, normalizeCategory, slugify } from '@/lib/api'; // ADDED slugify IMPORT
 import GmpSparkChart from './GmpSparkChart';
 
 interface IpoDetailClientProps {
@@ -26,6 +27,7 @@ export default function IpoDetailClient({ ipo }: IpoDetailClientProps) {
     { id: 'gmp', label: 'GMP', icon: '📈' },
     { id: 'allotment', label: 'Allotment', icon: '🎯' },
     { id: 'company', label: 'Company', icon: '🏢' },
+    ...(ipo.aiAnalysis ? [{ id: 'ai', label: 'AI Analysis', icon: '🤖' }] : []),
   ];
 
   return (
@@ -345,7 +347,42 @@ export default function IpoDetailClient({ ipo }: IpoDetailClientProps) {
               )}
             </div>
           )}
-
+      {/* AI ANALYSIS TAB - ADD THIS SECTION */}
+       {activeTab === 'ai' && ipo.aiAnalysis && (
+         <div className="space-y-6">
+           <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-indigo-200 dark:border-indigo-700">
+             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">AI Investment Analysis</h3>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="text-center">
+                 <div className={`text-2xl font-bold mb-2 ${
+                   ipo.aiAnalysis.rating === 'STRONG_BUY' ? 'text-green-600' :
+                   ipo.aiAnalysis.rating === 'BUY' ? 'text-green-500' :
+                   ipo.aiAnalysis.rating === 'NEUTRAL' ? 'text-yellow-500' :
+                   ipo.aiAnalysis.rating === 'SELL' ? 'text-orange-500' : 'text-red-500'
+                 }`}>
+                   {(ipo.aiAnalysis.rating || 'NEUTRAL').replace('_', ' ')}
+                 </div>
+                 <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+                   {(ipo.aiAnalysis.score || 0)}/100
+                 </div>
+               </div>
+              {/* Fixed Button with safe slugify */}
+                  <div className="text-center">
+                    <Link
+                      href={`/ipo/${slugify(ipo.name || 'unknown')}/ai-analysis`}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-lg transition-all"
+                    >
+                      <span>🤖</span>
+                      View Detailed AI Analysis
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </Link>
+                  </div>
+             </div>
+           </div>
+         </div>
+       )}
           {/* ALLOTMENT TAB */}
           {activeTab === 'allotment' && (
             <div className="space-y-4 sm:space-y-8">

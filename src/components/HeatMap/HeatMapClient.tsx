@@ -1,7 +1,7 @@
-// src/components/HeatMap/HeatMapClient.tsx
+// src/components/HeatMap/HeatMapClient.tsx - COMPLETE FIXED VERSION
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { IPO } from '@/types/ipo';
 import { parseGMP, normalizeCategory, normalizeStatus } from '@/lib/api';
 import HeatMapFilters from './HeatMapFilters';
@@ -16,12 +16,29 @@ interface HeatMapClientProps {
 export default function HeatMapClient({ ipos }: HeatMapClientProps) {
   const [selectedSector, setSelectedSector] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
-  const [selectedCategory, setSelectedCategory] = useState<string>('mainboard'); // Default to mainboard
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedPerformance, setSelectedPerformance] = useState<string>('all');
   const [hoveredIPO, setHoveredIPO] = useState<IPO | null>(null);
   const [selectedIPO, setSelectedIPO] = useState<IPO | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Handle tile click
+  const handleTileClick = useCallback((ipo: IPO) => {
+    console.log('Tile clicked:', ipo.name);
+    setSelectedIPO(ipo);
+  }, []);
+
+  // Handle modal close
+  const handleModalClose = useCallback(() => {
+    console.log('Closing modal');
+    setSelectedIPO(null);
+  }, []);
+
+  // Handle mouse move for tooltip
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  }, []);
 
   // Extract sectors
   const sectors = useMemo(() => {
@@ -172,10 +189,6 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
     });
   }, [ipos, selectedSector, selectedMonth, selectedCategory, selectedStatus, selectedPerformance]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-  };
-
   const handleExport = () => {
     alert('To export the heat map, use your browser\'s screenshot feature (Ctrl+Shift+S or Cmd+Shift+4)');
   };
@@ -224,10 +237,10 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
           >
             {filteredIPOs.map((ipo) => (
               <HeatMapTile
-                key={ipo._id}
+                key={ipo._id || ipo.id}
                 ipo={ipo}
                 onHover={setHoveredIPO}
-                onClick={setSelectedIPO}
+                onClick={handleTileClick}
               />
             ))}
           </div>
@@ -241,7 +254,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
 
       {/* Modal */}
       {selectedIPO && (
-        <HeatMapModal ipo={selectedIPO} onClose={() => setSelectedIPO(null)} />
+        <HeatMapModal ipo={selectedIPO} onClose={handleModalClose} />
       )}
     </div>
   );

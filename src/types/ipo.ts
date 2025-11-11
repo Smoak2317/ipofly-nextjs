@@ -11,7 +11,46 @@ export interface SubscriptionHistory {
   sharesOffered: string;
   sharesBid: string;
 }
-
+export interface AIAnalysis {
+  rating: 'STRONG_APPLY' | 'APPLY' | 'CONSIDER_APPLYING' | 'NEUTRAL' | 'AVOID' | 'STRONG_AVOID' | 'HIGH_RISK_AVOID';
+  score: number;
+  recommendation: string;
+  riskLevel: 'LOW' | 'LOW_TO_MEDIUM' | 'MEDIUM' | 'MEDIUM_TO_HIGH' | 'HIGH';
+  confidence: number;
+  factorAnalysis: {
+    GMP_Strength: number;
+    Subscription_Demand: number;
+    Financial_Health: number;
+    Valuation_Attractiveness: number;
+    Company_Fundamentals: number;
+    Market_Sentiment: number;
+    Allotment_Probability: number;
+    Listing_Gain_Potential: number;
+  };
+  factorInsights?: Record<string, string>;
+  keyMetrics: Record<string, any>;
+  applicationStrategy?: {
+    suggestedAction: string;
+    lotSize: string;
+    bidPrice: string;
+    riskLevel: string;
+  };
+  expectedReturns?: {
+    listingGain: string;
+    probability: string;
+  };
+  timelineAdvice?: string;
+}
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
 export interface IPO {
   _id?: string;
   name: string;
@@ -43,6 +82,7 @@ export interface IPO {
   gmpHistory?: GmpHistory[];
   subscriptionHistory?: SubscriptionHistory[];
   ipoObjectives?: string[];
+  aiAnalysis?: AIAnalysis;
 }
 
 export interface ApiResponse {
