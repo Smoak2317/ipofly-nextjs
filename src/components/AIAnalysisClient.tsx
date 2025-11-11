@@ -72,16 +72,7 @@ export default function AIAnalysisClient({ ipo }: AIAnalysisClientProps) {
     return ratings[rating] || ratings.NEUTRAL;
   };
 
-  const getRiskColor = (risk: string) => {
-    const colors: Record<string, string> = {
-      LOW: 'text-green-600',
-      LOW_TO_MEDIUM: 'text-green-500',
-      MEDIUM: 'text-yellow-500',
-      MEDIUM_TO_HIGH: 'text-orange-500',
-      HIGH: 'text-red-500',
-    };
-    return colors[risk] || colors.MEDIUM;
-  };
+
 
   const ratingInfo = getRatingInfo(aiAnalysis.rating);
   const scoreColor = getScoreColor(aiAnalysis.score);

@@ -3,20 +3,76 @@ import { IPO } from '@/types/ipo';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app';
 
+export function getIPOStatusColor(status: string): string {
+  const normalized = normalizeStatus(status);
+
+  switch (normalized) {
+    case 'ongoing':
+      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+    case 'upcoming':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
+    case 'closed':
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+    case 'listed':
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
+    case 'allotted':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+  }
+}
+
+export function getIPOStatusIcon(status: string): string {
+  const normalized = normalizeStatus(status);
+
+  switch (normalized) {
+    case 'ongoing':
+      return '🔴';
+    case 'upcoming':
+      return '📅';
+    case 'closed':
+      return '✅';
+    case 'listed':
+      return '📈';
+    case 'allotted':
+      return '🎯';
+    default:
+      return '📊';
+  }
+}
+
+export async function fetchIPOsByCategory(category: 'mainboard' | 'sme'): Promise<IPO[]> {
+  try {
+    const allIPOs = await fetchAllIPOs();
+    return allIPOs.filter(ipo => normalizeCategory(ipo.category) === category);
+  } catch (error) {
+    console.error(`Error fetching ${category} IPOs:`, error);
+    return [];
+  }
+}
+
+export async function fetchIPOsByStatus(status: 'upcoming' | 'ongoing' | 'closed' | 'listed' | 'allotted'): Promise<IPO[]> {
+  try {
+    const allIPOs = await fetchAllIPOs();
+    return allIPOs.filter(ipo => normalizeStatus(ipo.status) === status);
+  } catch (error) {
+    console.error(`Error fetching ${status} IPOs:`, error);
+    return [];
+  }
+}
+
+// Existing functions with all fixes...
 export function slugify(text: string | null | undefined): string {
-  // Handle null, undefined, or empty values
   if (!text) {
     console.warn('slugify: Received null or undefined text');
     return 'unknown-ipo';
   }
 
-  // Handle non-string values
   if (typeof text !== 'string') {
     console.warn('slugify: Received non-string value:', typeof text, text);
     return 'unknown-ipo';
   }
 
-  // Handle empty string
   if (text.trim() === '') {
     console.warn('slugify: Received empty string');
     return 'unknown-ipo';
@@ -31,27 +87,27 @@ export function slugify(text: string | null | undefined): string {
       .replace(/\-\-+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '')
-      || 'unknown-ipo'; // Fallback if result is empty
+      || 'unknown-ipo';
   } catch (error) {
     console.error('Error in slugify function:', error, 'Text:', text);
     return 'unknown-ipo';
   }
 }
+
 export function parseGMP(gmp: string | null | undefined) {
   if (!gmp) {
     return { amountText: 'N/A', percentText: null, isPositive: false };
   }
 
-  // Handle various GMP formats
   const amountMatch = gmp.match(/₹\s*([\d,]+)/);
-  const percentMatch = gmp.match(/\(([-+]?\d+\.?\d*)%\)/);
+  const percentMatch = gmp.match(/\(([-+]?\d+\.?\d*)%?\)/);
 
   const amount = amountMatch ? amountMatch[1].replace(/,/g, '') : '0';
   const percent = percentMatch ? parseFloat(percentMatch[1]) : 0;
 
   return {
     amountText: `₹${amount}`,
-    percentText: percent !== 0 ? `(${percent > 0 ? '+' : ''}${percent}%)` : null,
+    percentText: percent !== 0 ? `(${percent > 0 ? '+' : ''}${percent.toFixed(2)}%)` : null,
     isPositive: percent > 0
   };
 }
@@ -80,7 +136,7 @@ export function normalizeStatus(status: string | null | undefined): string {
 export async function fetchAllIPOs(): Promise<IPO[]> {
   try {
     const response = await fetch(`${BACKEND_URL}/api/ipos`, {
-      next: { revalidate: 300 } // 5 minutes
+      next: { revalidate: 300 }
     });
 
     if (!response.ok) {
@@ -127,18 +183,15 @@ export async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
 
 export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
   return [...ipos].sort((a, b) => {
-    // Ongoing IPOs first
     const aStatus = normalizeStatus(a.status);
     const bStatus = normalizeStatus(b.status);
 
     if (aStatus === 'ongoing' && bStatus !== 'ongoing') return -1;
     if (bStatus === 'ongoing' && aStatus !== 'ongoing') return 1;
 
-    // Then upcoming IPOs
     if (aStatus === 'upcoming' && bStatus !== 'upcoming') return -1;
     if (bStatus === 'upcoming' && aStatus !== 'upcoming') return 1;
 
-    // Then by GMP percentage (higher first)
     const aGmp = parseGMP(a.gmp);
     const bGmp = parseGMP(b.gmp);
 
@@ -147,42 +200,4 @@ export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
 
     return bPercent - aPercent;
   });
-}
-
-export function getIPOStatusColor(status: string): string {
-  const normalized = normalizeStatus(status);
-
-  switch (normalized) {
-    case 'ongoing':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-    case 'upcoming':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
-    case 'closed':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
-    case 'listed':
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
-    case 'allotted':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
-  }
-}
-
-export function getIPOStatusIcon(status: string): string {
-  const normalized = normalizeStatus(status);
-
-  switch (normalized) {
-    case 'ongoing':
-      return '🔴';
-    case 'upcoming':
-      return '📅';
-    case 'closed':
-      return '✅';
-    case 'listed':
-      return '📈';
-    case 'allotted':
-      return '🎯';
-    default:
-      return '📊';
-  }
 }

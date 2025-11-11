@@ -1,4 +1,4 @@
-// src/components/AIAnalysisDetail.tsx - FIXED VERSION
+// src/components/AIAnalysisDetail.tsx - FIXED with 2 decimal places
 'use client';
 
 import Link from 'next/link';
@@ -13,14 +13,11 @@ interface AIAnalysisDetailProps {
 
 export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
   const router = useRouter();
-
-  // Safe data access with fallbacks
-  const { amountText, percentText, isPositive } = parseGMP(ipo?.gmp);
+  const { amountText, isPositive } = parseGMP(ipo?.gmp);
   const category = normalizeCategory(ipo?.category);
   const aiAnalysis = ipo?.aiAnalysis;
   const slug = slugify(ipo?.name);
 
-  // Redirect if IPO or AI analysis is missing
   if (!ipo || !aiAnalysis) {
     router.push('/');
     return null;
@@ -120,7 +117,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
                   {(aiAnalysis.rating || 'NEUTRAL').replace(/_/g, ' ')}
                 </div>
                 <div className="text-lg sm:text-xl font-semibold text-white/90">
-                  {(aiAnalysis.score || 0)}/100
+                  {(aiAnalysis.score || 0).toFixed(2)}/100
                 </div>
               </div>
 
@@ -134,7 +131,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
                           {factor.replace(/_/g, ' ')}
                         </span>
                         <span className={`text-sm font-bold ${getFactorColor(score || 0)}`}>
-                          {(score || 0)}/100
+                          {(score || 0).toFixed(2)}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -152,7 +149,6 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
 
           {/* Recommendation & Risk */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            {/* Recommendation */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                 <span className="text-xl">💡</span>
@@ -163,7 +159,6 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
               </p>
             </div>
 
-            {/* Risk Analysis */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                 <span className="text-xl">⚠️</span>
@@ -179,13 +174,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Confidence</span>
                   <span className="font-bold text-indigo-600 dark:text-indigo-400">
-                    {Math.round((aiAnalysis.confidence || 0) * 100)}%
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Horizon</span>
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {(aiAnalysis.investmentHorizon || 'MEDIUM_TERM').replace(/_/g, ' ')}
+                    {((aiAnalysis.confidence || 0) * 100).toFixed(2)}%
                   </span>
                 </div>
               </div>
@@ -281,16 +270,6 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
                   {aiAnalysis.expectedReturns.probability || 'N/A'} Probability
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Timeline Advice */}
-          {aiAnalysis.timelineAdvice && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Timeline Advice</h3>
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                {aiAnalysis.timelineAdvice}
-              </p>
             </div>
           )}
 

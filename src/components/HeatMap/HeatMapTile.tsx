@@ -1,9 +1,8 @@
-// src/components/HeatMap/HeatMapTile.tsx - FIXED CLICK HANDLER
+// src/components/HeatMap/HeatMapTile.tsx - FIXED with GMP percentage-based sizing
 'use client';
 
 import { IPO } from '@/types/ipo';
-import { parseGMP, normalizeStatus, slugify } from '@/lib/api';
-import Link from 'next/link';
+import { parseGMP, normalizeStatus } from '@/lib/api';
 import Image from 'next/image';
 
 interface HeatMapTileProps {
@@ -15,17 +14,21 @@ interface HeatMapTileProps {
 export default function HeatMapTile({ ipo, onHover, onClick }: HeatMapTileProps) {
   const { percentText } = parseGMP(ipo.gmp);
   const status = normalizeStatus(ipo.status);
-  const slug = slugify(ipo.name || 'unknown');
 
-  // Safe AI analysis access
   const aiAnalysis = ipo.aiAnalysis;
   const hasAIAnalysis = !!aiAnalysis && typeof aiAnalysis === 'object';
 
-  // Get tile color and size based on GMP percentage (3 colors only: High, Moderate, Low)
-  const getGMPStyle = () => {
-    const percentMatch = percentText?.match(/\(([-+]?\d+\.?\d*)/);
-    const percent = percentMatch ? parseFloat(percentMatch[1]) : 0;
+  // Extract percentage value for sizing
+  const getPercentageValue = (): number => {
+    if (!percentText) return 0;
+    const match = percentText.match(/\(([-+]?\d+\.?\d*)/);
+    return match ? parseFloat(match[1]) : 0;
+  };
 
+  const percentValue = getPercentageValue();
+
+  // Get tile style based on GMP percentage
+  const getGMPStyle = () => {
     // Closed/Listed IPOs - Gray with normal size
     if (status === 'closed' || status === 'listed' || status === 'allotted') {
       return {
@@ -34,106 +37,133 @@ export default function HeatMapTile({ ipo, onHover, onClick }: HeatMapTileProps)
         text: 'text-white',
         glow: 'hover:shadow-gray-500/30',
         size: 'col-span-1 row-span-1',
-        fontSize: 'text-xs'
+        fontSize: 'text-xs',
+        minHeight: 'min-h-[80px]'
       };
     }
 
-    // HIGH (50%+) - Bright Green - LARGE (2x2)
-    if (percent >= 50) {
+    // Size categories based on GMP percentage
+    // EXTRA LARGE: 100%+
+    if (percentValue >= 100) {
+      return {
+        bg: 'from-emerald-600 to-green-700',
+        border: 'border-green-800',
+        text: 'text-white',
+        glow: 'hover:shadow-green-600/50',
+        size: 'col-span-3 row-span-3', // 3x3
+        fontSize: 'text-xl sm:text-2xl',
+        minHeight: 'min-h-[240px]'
+      };
+    }
+    // LARGE: 50-100%
+    else if (percentValue >= 50) {
       return {
         bg: 'from-emerald-500 to-green-600',
         border: 'border-green-700',
         text: 'text-white',
         glow: 'hover:shadow-green-500/40',
-        size: 'col-span-2 row-span-2',
-        fontSize: 'text-base sm:text-lg'
+        size: 'col-span-2 row-span-2', // 2x2
+        fontSize: 'text-lg sm:text-xl',
+        minHeight: 'min-h-[160px]'
       };
     }
-    // MODERATE (0% to 50%) - Yellow/Amber - MEDIUM (1x1)
-    else if (percent >= 0) {
+    // MEDIUM: 20-50%
+    else if (percentValue >= 20) {
       return {
         bg: 'from-yellow-400 to-amber-500',
         border: 'border-yellow-600',
         text: 'text-gray-900',
         glow: 'hover:shadow-yellow-500/40',
-        size: 'col-span-1 row-span-1',
-        fontSize: 'text-xs sm:text-sm'
+        size: 'col-span-2 row-span-1', // 2x1
+        fontSize: 'text-sm sm:text-base',
+        minHeight: 'min-h-[100px]'
       };
     }
-    // LOW (Below 0%) - Red - SMALL (1x1)
+    // SMALL: 0-20%
+    else if (percentValue >= 0) {
+      return {
+        bg: 'from-yellow-300 to-amber-400',
+        border: 'border-yellow-500',
+        text: 'text-gray-900',
+        glow: 'hover:shadow-yellow-400/40',
+        size: 'col-span-1 row-span-1', // 1x1
+        fontSize: 'text-xs',
+        minHeight: 'min-h-[80px]'
+      };
+    }
+    // NEGATIVE: Below 0%
     else {
       return {
         bg: 'from-red-500 to-rose-600',
         border: 'border-red-700',
         text: 'text-white',
         glow: 'hover:shadow-red-500/40',
-        size: 'col-span-1 row-span-1',
-        fontSize: 'text-xs'
+        size: 'col-span-1 row-span-1', // 1x1
+        fontSize: 'text-xs',
+        minHeight: 'min-h-[80px]'
       };
     }
   };
 
   const style = getGMPStyle();
 
-  // Handle click
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('HeatMapTile clicked:', ipo.name);
     onClick(ipo);
   };
 
   return (
     <div
-      className={`group relative bg-gradient-to-br ${style.bg} ${style.border} ${style.size} border-2 rounded-lg p-2 sm:p-3 transition-all duration-200 hover:scale-105 ${style.glow} hover:shadow-xl cursor-pointer overflow-hidden flex flex-col items-center justify-center min-h-[80px] sm:min-h-[100px]`}
+      className={`group relative bg-gradient-to-br ${style.bg} ${style.border} ${style.size} border-2 rounded-lg p-2 sm:p-3 transition-all duration-200 hover:scale-105 ${style.glow} hover:shadow-xl cursor-pointer overflow-hidden flex flex-col items-center justify-center ${style.minHeight}`}
       onMouseEnter={() => onHover(ipo)}
       onMouseLeave={() => onHover(null)}
       onClick={handleClick}
     >
-      {/* Shine effect on hover */}
+      {/* Shine effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center gap-1 w-full h-full p-1">
-        {/* Logo */}
+        {/* Logo - Larger for bigger tiles */}
         {ipo.logoUrl && (
-          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded bg-white/90 p-0.5 shadow-sm flex-shrink-0 mb-1">
+          <div className={`${style.size.includes('col-span-3') ? 'w-16 h-16' : style.size.includes('col-span-2') ? 'w-10 h-10' : 'w-6 h-6'} rounded bg-white/90 p-0.5 shadow-sm flex-shrink-0 mb-1`}>
             <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app'}${ipo.logoUrl}`}
               alt={`${ipo.name} logo`}
-              width={32}
-              height={32}
+              width={64}
+              height={64}
               className="w-full h-full object-contain"
             />
           </div>
         )}
 
-        {/* Company Name - Always visible, word-wrap enabled */}
+        {/* Company Name */}
         <h3 className={`${style.fontSize} font-bold text-center line-clamp-2 ${style.text} group-hover:underline px-1 break-words w-full leading-tight`}>
           {ipo.name}
         </h3>
 
-        {/* Percentage */}
+        {/* Percentage - Prominent for larger tiles */}
         {percentText && (
-          <div className={`${style.fontSize === 'text-base sm:text-lg' ? 'text-sm' : 'text-xs'} font-bold ${style.text} whitespace-nowrap mt-1`}>
+          <div className={`${style.size.includes('col-span-3') ? 'text-lg' : style.size.includes('col-span-2') ? 'text-sm' : 'text-xs'} font-bold ${style.text} whitespace-nowrap mt-1`}>
             {percentText}
           </div>
         )}
 
-        {/* AI Score Badge - Small and subtle */}
+        {/* AI Score Badge */}
         {hasAIAnalysis && (
           <div className="absolute top-1 right-1">
-            <div className={`px-1 py-0.5 rounded text-[8px] font-bold ${
+            <div className={`px-1 py-0.5 rounded ${style.size.includes('col-span-3') ? 'text-xs' : 'text-[8px]'} font-bold ${
               aiAnalysis.score >= 70 ? 'bg-green-500 text-white' :
               aiAnalysis.score >= 50 ? 'bg-yellow-500 text-gray-900' :
               'bg-red-500 text-white'
             }`}>
-              {aiAnalysis.score}
+              {aiAnalysis.score.toFixed(0)}
             </div>
           </div>
         )}
 
-        {/* Status Badge - Blinking red dot for ongoing */}
+        {/* Live Status - Blinking red dot */}
         {status === 'ongoing' && (
           <div className="absolute top-1 left-1">
             <span className="relative flex h-2 w-2">

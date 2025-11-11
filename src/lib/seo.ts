@@ -184,9 +184,13 @@ export function generateStatusMetadata(status: 'upcoming' | 'ongoing'): Metadata
   };
 }
 
+// src/lib/seo.ts - FIXED VERSION
 export function generateStructuredData(ipo: IPO) {
-  const { amount } = parseGMP(ipo.gmp);
+  const { amountText } = parseGMP(ipo.gmp);
   const slug = slugify(ipo.name);
+
+  // Extract numeric value from amountText (e.g., "₹150" -> 150)
+  const numericAmount = amountText ? parseFloat(amountText.replace(/[^0-9.]/g, '')) : 0;
 
   return {
     '@context': 'https://schema.org',
@@ -211,7 +215,8 @@ export function generateStructuredData(ipo: IPO) {
       telephone: ipo.phone,
       email: ipo.email,
     },
-    aggregateRating: amount > 0 ? {
+    // FIXED: Use numericAmount instead of amount
+    aggregateRating: numericAmount > 0 ? {
       '@type': 'AggregateRating',
       ratingValue: '4.5',
       reviewCount: '100',

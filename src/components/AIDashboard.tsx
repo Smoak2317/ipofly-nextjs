@@ -193,7 +193,7 @@ export default function AIDashboard({ allIpos }: AIDashboardProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredIpos.map((ipo, index) => (
-              <IpoCard key={ipo.id || index} ipo={ipo} priority={index < 6} />
+              <IpoCard key={ipo._id || index} ipo={ipo} priority={index < 6} />
             ))}
           </div>
         )}

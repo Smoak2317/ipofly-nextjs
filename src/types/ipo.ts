@@ -28,7 +28,7 @@ export interface AIAnalysis {
     Listing_Gain_Potential: number;
   };
   factorInsights?: Record<string, string>;
-  keyMetrics: Record<string, any>;
+  keyMetrics: Record<string, string>;
   applicationStrategy?: {
     suggestedAction: string;
     lotSize: string;
@@ -41,6 +41,7 @@ export interface AIAnalysis {
   };
   timelineAdvice?: string;
 }
+
 export function slugify(text: string): string {
   return text
     .toString()

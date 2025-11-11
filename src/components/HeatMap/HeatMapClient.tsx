@@ -85,7 +85,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
           }
         }
       } catch (e) {
-        // Skip invalid dates
+        console.log("Error in OpenDate {}", e )
       }
     });
 
@@ -148,6 +148,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
             return false;
           }
         } catch (e) {
+            console.log("Error in openDate {}",e)
           return false;
         }
       }
