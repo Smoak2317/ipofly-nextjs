@@ -1,4 +1,4 @@
-// src/lib/api.ts - COMPLETE FIXED VERSION
+// src/lib/api.ts - FIXED SORTING VERSION
 import { IPO } from '@/types/ipo';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app';
@@ -61,7 +61,6 @@ export async function fetchIPOsByStatus(status: 'upcoming' | 'ongoing' | 'closed
   }
 }
 
-// Existing functions with all fixes...
 export function slugify(text: string | null | undefined): string {
   if (!text) {
     console.warn('slugify: Received null or undefined text');
@@ -183,18 +182,35 @@ export async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
 
 export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
   return [...ipos].sort((a, b) => {
+    const statusA = normalizeStatus(a.status);
+    const statusB = normalizeStatus(b.status);
+    // Ongoing IPOs first
     const aStatus = normalizeStatus(a.status);
     const bStatus = normalizeStatus(b.status);
 
     if (aStatus === 'ongoing' && bStatus !== 'ongoing') return -1;
     if (bStatus === 'ongoing' && aStatus !== 'ongoing') return 1;
 
+    const statusPriority: Record<string, number> = {
+      'ongoing': 1,
+      'upcoming': 2,
+      'closed': 3,
+      'allotted': 4,
+      'listed': 5,
+    };
+    // Then upcoming IPOs
     if (aStatus === 'upcoming' && bStatus !== 'upcoming') return -1;
     if (bStatus === 'upcoming' && aStatus !== 'upcoming') return 1;
 
+    const priorityA = statusPriority[statusA] || 999;
+    const priorityB = statusPriority[statusB] || 999;
+    // Then by GMP percentage (higher first)
     const aGmp = parseGMP(a.gmp);
     const bGmp = parseGMP(b.gmp);
 
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
     const aPercent = aGmp.percentText ? parseFloat(aGmp.percentText.replace(/[()%+]/g, '')) : 0;
     const bPercent = bGmp.percentText ? parseFloat(bGmp.percentText.replace(/[()%+]/g, '')) : 0;
 

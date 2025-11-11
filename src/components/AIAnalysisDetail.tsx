@@ -1,4 +1,4 @@
-// src/components/AIAnalysisDetail.tsx - FIXED with 2 decimal places
+// src/components/AIAnalysisDetail.tsx - FIXED VERSION
 'use client';
 
 import Link from 'next/link';
@@ -59,9 +59,22 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
     return 'bg-red-500';
   };
 
+  // FIXED: Parse listing price to check if negative
+  const parseListingPrice = (price: string | undefined): { value: number; isNegative: boolean } => {
+    if (!price) return { value: 0, isNegative: false };
+
+    const numericValue = parseFloat(price.replace(/[^0-9.-]/g, ''));
+    return {
+      value: numericValue,
+      isNegative: numericValue < 0
+    };
+  };
+
+  const listingPrice = ipo.expectedListingPrice ? parseListingPrice(ipo.expectedListingPrice) : null;
+
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
-      {/* Header */}
+      {/* Header - FIXED with logo display */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-900 dark:to-purple-900 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
           {ipo.logoUrl && (
@@ -73,7 +86,8 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
                 height={80}
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
                 }}
               />
             </div>
@@ -101,7 +115,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        {/* Main AI Analysis Card */}
+        {/* Main AI Analysis */}
         <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           {/* Overall Rating */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
@@ -111,7 +125,6 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
             </h2>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-              {/* Rating Badge */}
               <div className={`bg-gradient-to-r ${getRatingColor(aiAnalysis.rating || 'NEUTRAL')} rounded-2xl p-4 sm:p-6 text-center min-w-[140px]`}>
                 <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
                   {(aiAnalysis.rating || 'NEUTRAL').replace(/_/g, ' ')}
@@ -121,7 +134,6 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
                 </div>
               </div>
 
-              {/* Score Breakdown */}
               <div className="flex-1">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {aiAnalysis.factorAnalysis && Object.entries(aiAnalysis.factorAnalysis).map(([factor, score]) => (

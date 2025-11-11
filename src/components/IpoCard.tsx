@@ -1,4 +1,4 @@
-// src/components/IpoCard.tsx - COMPLETELY REDESIGNED & FIXED
+// src/components/IpoCard.tsx - FIXED VERSION
 'use client';
 
 import Link from 'next/link';
@@ -17,7 +17,6 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
   const category = normalizeCategory(ipo.category);
   const status = normalizeStatus(ipo.status);
 
-  // Safe AI Analysis access
   const aiAnalysis = ipo.aiAnalysis;
   const hasAIAnalysis = !!aiAnalysis && typeof aiAnalysis === 'object';
   const aiScore = hasAIAnalysis ? (aiAnalysis.score || 0) : 0;
@@ -112,7 +111,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
 
               {/* Company Name + Badges */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2 leading-tight">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors mb-2 leading-tight">
                   {ipo.name}
                 </h3>
 
@@ -120,8 +119,8 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                   <span className={`inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-md ${statusConfig.bg} ${statusConfig.text}`}>
                     {statusConfig.icon}
                   </span>
-                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-md bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 uppercase">
-                    {category === 'sme' ? '🚀 SME' : '🏛️ Main'}
+                  <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 uppercase">
+                    {category === 'sme' ? 'SME' : 'Mainboard'}
                   </span>
                 </div>
               </div>
