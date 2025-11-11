@@ -1,4 +1,4 @@
-// src/components/HeatMap/HeatMapClient.tsx - COMPLETE FIXED VERSION
+// src/components/HeatMap/HeatMapClient.tsx - COMPLETELY FIXED
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -23,69 +23,48 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
   const [selectedIPO, setSelectedIPO] = useState<IPO | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // Handle tile click
   const handleTileClick = useCallback((ipo: IPO) => {
-    console.log('Tile clicked:', ipo.name);
     setSelectedIPO(ipo);
   }, []);
 
-  // Handle modal close
   const handleModalClose = useCallback(() => {
-    console.log('Closing modal');
     setSelectedIPO(null);
   }, []);
 
-  // Handle mouse move for tooltip
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
   }, []);
 
-  // Extract sectors
+  // Extract sectors with better categorization
   const sectors = useMemo(() => {
     const sectorSet = new Set<string>();
 
     ipos.forEach(ipo => {
-      const desc = ipo.companyDescription?.toLowerCase() || '';
-      const name = ipo.name.toLowerCase();
+      const desc = (ipo.companyDescription?.toLowerCase() || '') + ' ' + (ipo.name?.toLowerCase() || '');
 
-      if (desc.includes('tech') || name.includes('tech') || desc.includes('software') || desc.includes('digital')) {
+      if (desc.includes('tech') || desc.includes('software') || desc.includes('digital') || desc.includes('ai')) {
         sectorSet.add('Technology');
-      }
-      if (desc.includes('finance') || desc.includes('fintech') || name.includes('finance')) {
+      } else if (desc.includes('finance') || desc.includes('fintech') || desc.includes('bank') || desc.includes('insurance')) {
         sectorSet.add('Finance');
-      }
-      if (desc.includes('healthcare') || desc.includes('pharma') || desc.includes('medical')) {
+      } else if (desc.includes('healthcare') || desc.includes('pharma') || desc.includes('medical') || desc.includes('hospital')) {
         sectorSet.add('Healthcare');
-      }
-      if (desc.includes('fmcg') || desc.includes('food') || desc.includes('beverage') || desc.includes('consumer')) {
+      } else if (desc.includes('fmcg') || desc.includes('food') || desc.includes('beverage') || desc.includes('consumer')) {
         sectorSet.add('FMCG');
-      }
-      if (desc.includes('energy') || desc.includes('power') || desc.includes('solar') || desc.includes('green')) {
+      } else if (desc.includes('energy') || desc.includes('power') || desc.includes('solar') || desc.includes('renewable')) {
         sectorSet.add('Energy');
-      }
-      if (desc.includes('infrastructure') || desc.includes('construction') || desc.includes('real estate')) {
+      } else if (desc.includes('infrastructure') || desc.includes('construction') || desc.includes('real estate')) {
         sectorSet.add('Infrastructure');
-      }
-      if (desc.includes('retail') || desc.includes('e-commerce') || desc.includes('eyewear') || name.includes('lenskart')) {
+      } else if (desc.includes('retail') || desc.includes('e-commerce') || desc.includes('shopping')) {
         sectorSet.add('Retail');
-      }
-      if (desc.includes('manufacturing') || desc.includes('industrial')) {
+      } else if (desc.includes('manufacturing') || desc.includes('industrial') || desc.includes('factory')) {
         sectorSet.add('Manufacturing');
-      }
-      if (desc.includes('logistics') || desc.includes('transport')) {
+      } else if (desc.includes('logistics') || desc.includes('transport') || desc.includes('shipping')) {
         sectorSet.add('Logistics');
-      }
-      if (desc.includes('education') || desc.includes('edtech')) {
+      } else if (desc.includes('education') || desc.includes('edtech') || desc.includes('learning')) {
         sectorSet.add('Education');
-      }
-      if (desc.includes('auto') || desc.includes('automotive')) {
+      } else if (desc.includes('auto') || desc.includes('automotive') || desc.includes('vehicle')) {
         sectorSet.add('Automotive');
-      }
-
-      if (![...sectorSet].some(s => {
-        const lowerDesc = desc + name;
-        return lowerDesc.includes(s.toLowerCase());
-      })) {
+      } else {
         sectorSet.add('Others');
       }
     });
@@ -93,56 +72,51 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
     return ['all', ...Array.from(sectorSet).sort()];
   }, [ipos]);
 
-  // Extract months
   const months = useMemo(() => {
     const monthSet = new Set<string>();
 
     ipos.forEach(ipo => {
       try {
-        const date = new Date(ipo.issueOpenDate);
-        if (!isNaN(date.getTime())) {
-          const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-          monthSet.add(monthYear);
+        if (ipo.issueOpenDate) {
+          const date = new Date(ipo.issueOpenDate);
+          if (!isNaN(date.getTime())) {
+            const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            monthSet.add(monthYear);
+          }
         }
       } catch (e) {
         // Skip invalid dates
       }
     });
 
-    return ['all', ...Array.from(monthSet).sort((a, b) => {
-      if (a === 'all') return -1;
-      if (b === 'all') return 1;
+    const sortedMonths = Array.from(monthSet).sort((a, b) => {
       return new Date(a).getTime() - new Date(b).getTime();
-    })];
+    });
+
+    return ['all', ...sortedMonths];
   }, [ipos]);
 
-  // Categories
   const categories = ['all', 'mainboard', 'sme'];
-
-  // Statuses
   const statuses = ['all', 'upcoming', 'ongoing', 'closed', 'listed', 'allotted'];
 
-  // Get sector for an IPO
   const getIPOSector = (ipo: IPO): string => {
-    const desc = ipo.companyDescription?.toLowerCase() || '';
-    const name = ipo.name.toLowerCase();
+    const desc = (ipo.companyDescription?.toLowerCase() || '') + ' ' + (ipo.name?.toLowerCase() || '');
 
-    if (desc.includes('tech') || name.includes('tech') || desc.includes('software') || desc.includes('digital')) return 'Technology';
-    if (desc.includes('finance') || desc.includes('fintech') || name.includes('finance')) return 'Finance';
-    if (desc.includes('healthcare') || desc.includes('pharma') || desc.includes('medical')) return 'Healthcare';
+    if (desc.includes('tech') || desc.includes('software') || desc.includes('digital') || desc.includes('ai')) return 'Technology';
+    if (desc.includes('finance') || desc.includes('fintech') || desc.includes('bank') || desc.includes('insurance')) return 'Finance';
+    if (desc.includes('healthcare') || desc.includes('pharma') || desc.includes('medical') || desc.includes('hospital')) return 'Healthcare';
     if (desc.includes('fmcg') || desc.includes('food') || desc.includes('beverage') || desc.includes('consumer')) return 'FMCG';
-    if (desc.includes('energy') || desc.includes('power') || desc.includes('solar') || desc.includes('green')) return 'Energy';
+    if (desc.includes('energy') || desc.includes('power') || desc.includes('solar') || desc.includes('renewable')) return 'Energy';
     if (desc.includes('infrastructure') || desc.includes('construction') || desc.includes('real estate')) return 'Infrastructure';
-    if (desc.includes('retail') || desc.includes('e-commerce') || desc.includes('eyewear') || name.includes('lenskart')) return 'Retail';
-    if (desc.includes('manufacturing') || desc.includes('industrial')) return 'Manufacturing';
-    if (desc.includes('logistics') || desc.includes('transport')) return 'Logistics';
-    if (desc.includes('education') || desc.includes('edtech')) return 'Education';
-    if (desc.includes('auto') || desc.includes('automotive')) return 'Automotive';
+    if (desc.includes('retail') || desc.includes('e-commerce') || desc.includes('shopping')) return 'Retail';
+    if (desc.includes('manufacturing') || desc.includes('industrial') || desc.includes('factory')) return 'Manufacturing';
+    if (desc.includes('logistics') || desc.includes('transport') || desc.includes('shipping')) return 'Logistics';
+    if (desc.includes('education') || desc.includes('edtech') || desc.includes('learning')) return 'Education';
+    if (desc.includes('auto') || desc.includes('automotive') || desc.includes('vehicle')) return 'Automotive';
 
     return 'Others';
   };
 
-  // Filter IPOs
   const filteredIPOs = useMemo(() => {
     return ipos.filter(ipo => {
       // Category filter
@@ -166,15 +140,19 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
       // Month filter
       if (selectedMonth !== 'all') {
         try {
-          const date = new Date(ipo.issueOpenDate);
-          const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-          if (monthYear !== selectedMonth) return false;
+          if (ipo.issueOpenDate) {
+            const date = new Date(ipo.issueOpenDate);
+            const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            if (monthYear !== selectedMonth) return false;
+          } else {
+            return false;
+          }
         } catch (e) {
           return false;
         }
       }
 
-      // Performance filter (3 categories: High, Moderate, Low)
+      // Performance filter
       if (selectedPerformance !== 'all') {
         const { percentText } = parseGMP(ipo.gmp);
         const percentMatch = percentText?.match(/\(([-+]?\d+\.?\d*)/);
@@ -195,7 +173,6 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
-      {/* Filters */}
       <HeatMapFilters
         sectors={sectors}
         months={months}
@@ -214,7 +191,6 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
         onExport={handleExport}
       />
 
-      {/* Heat Map Grid */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center mb-4 sm:mb-6">
           <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
@@ -237,7 +213,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
           >
             {filteredIPOs.map((ipo) => (
               <HeatMapTile
-                key={ipo._id || ipo.id}
+                key={ipo._id || ipo.name}
                 ipo={ipo}
                 onHover={setHoveredIPO}
                 onClick={handleTileClick}
@@ -247,12 +223,10 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
         )}
       </div>
 
-      {/* Tooltip */}
       {hoveredIPO && (
         <HeatMapTooltip ipo={hoveredIPO} position={mousePosition} />
       )}
 
-      {/* Modal */}
       {selectedIPO && (
         <HeatMapModal ipo={selectedIPO} onClose={handleModalClose} />
       )}
