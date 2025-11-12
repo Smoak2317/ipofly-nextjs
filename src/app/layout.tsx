@@ -1,12 +1,10 @@
-// src/app/layout.tsx - UPDATE THIS FILE
-
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { generateHomeMetadata } from "@/lib/seo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import PWARegister from '@/components/PWARegister';
+import PWARegister from "@/components/PWARegister";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,13 +16,11 @@ export const metadata: Metadata = {
   ...generateHomeMetadata(),
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
-      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
@@ -46,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Anti-Flicker Script - Must be before any content */}
+        {/* Anti-Flicker Script */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -70,7 +66,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="IpoFly" />
 
         {/* iOS Splash Screens */}
-        <link rel="apple-touch-startup-image" href="/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" />
+        <link
+          rel="apple-touch-startup-image"
+          href="/splash-1242x2688.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
+        />
 
         {/* Android Theme */}
         <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
@@ -82,18 +82,24 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="canonical" href="https://ipofly.com/" />
-        <link rel="manifest" href="/site.webmanifest" />
         <link rel="preconnect" href="https://ipofly-273428006377.asia-south1.run.app" />
 
+        {/* ✅ Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHLY88C18C"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-YHLY88C18C');
-        </script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-YHLY88C18C', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
       </head>
+
       <body className={`${inter.variable} antialiased`}>
         <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors">
           <Navbar />
