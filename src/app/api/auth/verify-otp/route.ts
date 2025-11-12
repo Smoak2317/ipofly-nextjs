@@ -1,15 +1,13 @@
 // src/app/api/auth/verify-otp/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
-// 🔴 TODO: Replace with your actual backend API URL
-const BACKEND_API_URL = 'https://your-backend-api.com/api/auth/verify-otp';
+const BACKEND_API_URL = process.env.BACKEND_API_URL;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { phoneNumber, otp } = body;
 
-    // Validate input
     if (!phoneNumber || !otp) {
       return NextResponse.json(
         { success: false, message: 'Phone number and OTP are required' },
@@ -17,7 +15,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate OTP format (6 digits)
     if (!/^\d{6}$/.test(otp)) {
       return NextResponse.json(
         { success: false, message: 'Invalid OTP format' },
@@ -25,9 +22,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 🔴 TODO: Call your actual backend API
-    // Example API call:
-    const response = await fetch(BACKEND_API_URL, {
+    if (!BACKEND_API_URL) {
+      return NextResponse.json(
+        { success: false, message: 'Backend API not configured' },
+        { status: 500 }
+      );
+    }
+
+    const response = await fetch(`${BACKEND_API_URL}/api/auth/verify-otp`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,11 +49,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Return success response with token
     return NextResponse.json({
       success: true,
       message: 'Login successful',
-      token: data.token, // JWT token from your backend
+      token: data.token,
       user: {
         id: data.user.id,
         phoneNumber: data.user.phoneNumber,
@@ -70,44 +71,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// ============================================
-// 📝 BACKEND API REQUIREMENTS
-// ============================================
-//
-// Your backend API should accept POST requests to /api/auth/verify-otp
-// with the following JSON body:
-//
-// {
-//   "phoneNumber": "+919876543210",
-//   "otp": "123456"
-// }
-//
-// And return:
-//
-// SUCCESS (200):
-// {
-//   "success": true,
-//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-//   "user": {
-//     "id": "user123",
-//     "phoneNumber": "+919876543210",
-//     "name": "John Doe" // Optional, may be null for new users
-//   }
-// }
-//
-// ERROR (400/401):
-// {
-//   "success": false,
-//   "message": "Invalid or expired OTP"
-// }
-//
-// INTEGRATION NOTES:
-// - Verify OTP against stored hash in database/cache
-// - Check if OTP has expired (5 minutes)
-// - Delete OTP after successful verification
-// - Generate JWT token for authenticated session
-// - If user doesn't exist, create new user account
-// - Implement attempt limiting (max 5 wrong attempts)
-//
-// ============================================

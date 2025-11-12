@@ -64,7 +64,7 @@ export default function HeatMapModal({ ipo, onClose }: HeatMapModalProps) {
                 {ipo.logoUrl && (
                   <div className="w-12 h-12 rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white overflow-hidden flex-shrink-0">
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app'}${ipo.logoUrl}`}
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${ipo.logoUrl}`}
                       alt={ipo.name || 'IPO Logo'}
                       width={48}
                       height={48}

@@ -80,7 +80,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
           {ipo.logoUrl && (
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl border-2 border-white/20 bg-white p-2 overflow-hidden flex-shrink-0">
               <Image
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app'}${ipo.logoUrl}`}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${ipo.logoUrl}`}
                 alt={ipo.name || 'IPO Logo'}
                 width={80}
                 height={80}

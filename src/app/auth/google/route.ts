@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+const BACKEND_API_URL = process.env.BACKEND_API_URL;
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +11,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: 'ID token is required' },
         { status: 400 }
+      );
+    }
+
+    if (!BACKEND_API_URL) {
+      return NextResponse.json(
+        { success: false, message: 'Backend API not configured' },
+        { status: 500 }
       );
     }
 

@@ -209,7 +209,7 @@ export default function HeatMapClient({ ipos }: HeatMapClientProps) {
           </div>
         ) : (
           <div
-            className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-3 auto-rows-min"
+            className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4 auto-rows-min"
             onMouseMove={handleMouseMove}
           >
             {filteredIPOs.map((ipo) => (

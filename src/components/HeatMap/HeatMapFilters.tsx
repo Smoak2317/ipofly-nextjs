@@ -150,21 +150,29 @@ export default function HeatMapFilters({
         </div>
       </div>
 
-      {/* Legend - Compact */}
+      {/* Legend - Updated */}
       <div className="mt-3 sm:mt-6 pt-3 sm:pt-6 border-t border-gray-200 dark:border-gray-700">
         <h3 className="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">Legend</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] sm:text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[10px] sm:text-xs">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-emerald-700 to-green-800 rounded"></div>
+            <span className="text-gray-700 dark:text-gray-300">150%+</span>
+          </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-emerald-500 to-green-600 rounded"></div>
-            <span className="text-gray-700 dark:text-gray-300">High (50%+)</span>
+            <span className="text-gray-700 dark:text-gray-300">50-100%</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-yellow-400 to-amber-500 rounded"></div>
-            <span className="text-gray-700 dark:text-gray-300">Moderate (0-50%)</span>
+            <span className="text-gray-700 dark:text-gray-300">10-50%</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-red-500 to-rose-600 rounded"></div>
-            <span className="text-gray-700 dark:text-gray-300">Low (Below 0%)</span>
+            <span className="text-gray-700 dark:text-gray-300">Negative</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-blue-400 to-blue-500 rounded"></div>
+            <span className="text-gray-700 dark:text-gray-300">Upcoming</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-gray-400 to-gray-500 rounded"></div>

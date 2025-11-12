@@ -41,7 +41,7 @@ export default function IpoDetailClient({ ipo }: IpoDetailClientProps) {
             {ipo.logoUrl && (
               <div className="w-10 h-10 rounded-lg border border-white/20 bg-white p-0.5 overflow-hidden flex-shrink-0">
                 <Image
-                  src={`https://ipofly-273428006377.asia-south1.run.app${ipo.logoUrl}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${ipo.logoUrl}`}
                   alt={ipo.name}
                   width={40}
                   height={40}

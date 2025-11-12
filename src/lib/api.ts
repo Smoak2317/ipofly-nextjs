@@ -1,7 +1,7 @@
 // src/lib/api.ts - FIXED SORTING VERSION
 import { IPO } from '@/types/ipo';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ipofly-273428006377.asia-south1.run.app';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function getIPOStatusColor(status: string): string {
   const normalized = normalizeStatus(status);
@@ -120,18 +120,6 @@ export function normalizeCategory(category: string | null | undefined): string {
   return cat;
 }
 
-export function normalizeStatus(status: string | null | undefined): string {
-  if (!status) return 'upcoming';
-
-  const stat = status.toLowerCase();
-  if (stat.includes('ongoing') || stat.includes('live') || stat.includes('open')) return 'ongoing';
-  if (stat.includes('upcoming') || stat.includes('forthcoming')) return 'upcoming';
-  if (stat.includes('closed') || stat.includes('completed')) return 'closed';
-  if (stat.includes('listed')) return 'listed';
-  if (stat.includes('allotted') || stat.includes('allotment')) return 'allotted';
-  return stat;
-}
-
 export async function fetchAllIPOs(): Promise<IPO[]> {
   try {
     const response = await fetch(`${BACKEND_URL}/api/ipos`, {
@@ -179,18 +167,24 @@ export async function fetchIPOBySlug(slug: string): Promise<IPO | null> {
     return null;
   }
 }
+export function normalizeStatus(status: string | null | undefined): string {
+  if (!status) return 'upcoming';
+
+  const stat = status.toLowerCase();
+  if (stat.includes('ongoing') || stat.includes('live') || stat.includes('open')) return 'ongoing';
+  if (stat.includes('upcoming') || stat.includes('forthcoming')) return 'upcoming';
+  if (stat.includes('closed') || stat.includes('completed')) return 'closed';
+  if (stat.includes('allot')) return 'allotted'; // Fixed: removed "allotment" to catch "allotted" first
+  if (stat.includes('listed')) return 'listed';
+  return stat;
+}
 
 export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
   return [...ipos].sort((a, b) => {
     const statusA = normalizeStatus(a.status);
     const statusB = normalizeStatus(b.status);
-    // Ongoing IPOs first
-    const aStatus = normalizeStatus(a.status);
-    const bStatus = normalizeStatus(b.status);
 
-    if (aStatus === 'ongoing' && bStatus !== 'ongoing') return -1;
-    if (bStatus === 'ongoing' && aStatus !== 'ongoing') return 1;
-
+    // Status priority mapping
     const statusPriority: Record<string, number> = {
       'ongoing': 1,
       'upcoming': 2,
@@ -198,22 +192,19 @@ export function sortIPOsByPriority(ipos: IPO[]): IPO[] {
       'allotted': 4,
       'listed': 5,
     };
-    // Then upcoming IPOs
-    if (aStatus === 'upcoming' && bStatus !== 'upcoming') return -1;
-    if (bStatus === 'upcoming' && aStatus !== 'upcoming') return 1;
 
     const priorityA = statusPriority[statusA] || 999;
     const priorityB = statusPriority[statusB] || 999;
-    // Then by GMP percentage (higher first)
-    const aGmp = parseGMP(a.gmp);
-    const bGmp = parseGMP(b.gmp);
 
+    // Sort by status priority first
     if (priorityA !== priorityB) {
       return priorityA - priorityB;
     }
-    const aPercent = aGmp.percentText ? parseFloat(aGmp.percentText.replace(/[()%+]/g, '')) : 0;
-    const bPercent = bGmp.percentText ? parseFloat(bGmp.percentText.replace(/[()%+]/g, '')) : 0;
 
-    return bPercent - aPercent;
+    // Within same status, sort by close date (latest first)
+    const dateA = a.issueCloseDate ? new Date(a.issueCloseDate).getTime() : 0;
+    const dateB = b.issueCloseDate ? new Date(b.issueCloseDate).getTime() : 0;
+
+    return dateB - dateA;
   });
 }
