@@ -3,7 +3,20 @@ import SmartFilters from "@/components/SmartFilters";
 import Link from "next/link";
 
 export const revalidate = 300;
-export const metadata = { title: "Mainboard IPO | IpoFly" };
+export const metadata = {
+  title: "Mainboard IPO GMP Today | Live Grey Market Premium | IpoFly",
+  description: "Track Mainboard IPO GMP Today ✓ NSE & BSE IPO List ✓ Live Grey Market Premium ✓ Subscription Status ✓ Latest Mainboard IPO India 2025",
+  keywords: "mainboard ipo, mainboard ipo gmp, nse ipo, bse ipo, mainboard ipo list, mainboard ipo today",
+  openGraph: {
+    title: "Mainboard IPO GMP Today | Live Grey Market Premium",
+    description: "Track all Mainboard IPOs with live GMP, subscription status, and allotment details",
+    url: "https://ipofly.com/mainboard",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://ipofly.com/mainboard",
+  },
+};
 
 export default async function MainboardPage() {
   const ipos = await fetchIPOsByCategory("mainboard");

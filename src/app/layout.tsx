@@ -83,7 +83,31 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="canonical" href="https://ipofly.com/" />
         <link rel="preconnect" href="https://ipofly-273428006377.asia-south1.run.app" />
-
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "IpoFly",
+              "url": "https://yourdomain.com",
+              "description": "India's Most Trusted Live IPO GMP Tracker",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://yourdomain.com/?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "IpoFly",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://yourdomain.com/logo-light.png"
+                }
+              }
+            })
+          }}
+        />
         {/* ✅ Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHLY88C18C"></script>
         <script

@@ -3,7 +3,20 @@ import SmartFilters from "@/components/SmartFilters";
 import Link from "next/link";
 
 export const revalidate = 300;
-export const metadata = { title: "SME IPO | IpoFly" };
+export const metadata = {
+  title: "SME IPO GMP Today | Live Grey Market Premium | IpoFly",
+  description: "Track SME IPO GMP Today ✓ BSE SME IPO List ✓ NSE Emerge IPO ✓ Live Grey Market Premium ✓ Latest SME IPO India 2025",
+  keywords: "sme ipo, sme ipo gmp, bse sme ipo, nse emerge, sme ipo list, sme ipo today",
+  openGraph: {
+    title: "SME IPO GMP Today | Live Grey Market Premium",
+    description: "Track all SME IPOs with live GMP, subscription status, and allotment details",
+    url: "https://ipofly.com/sme",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://ipofly.com/sme",
+  },
+};
 
 export default async function SmePage() {
   const ipos = await fetchIPOsByCategory("sme");

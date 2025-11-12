@@ -5,7 +5,20 @@ import Link from "next/link";
 
 export const revalidate = 300;
 
-
+export const metadata = {
+  title: "IPO Heat Map | Visual Performance Dashboard | IpoFly",
+  description: "IPO Heat Map ✓ Visual Performance Analysis ✓ Color-coded GMP ✓ Sector-wise IPO View ✓ Interactive Market Overview India 2025",
+  keywords: "ipo heatmap, ipo performance map, ipo visual analysis, sector wise ipo, ipo market overview",
+  openGraph: {
+    title: "IPO Heat Map | Visual Performance Dashboard",
+    description: "Visualize IPO performance with color-coded heat map",
+    url: "https://ipofly.com/heatmap",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://ipofly.com/heatmap",
+  },
+};
 
 export default async function HeatMapPage() {
   const allIPOs = await fetchAllIPOs();

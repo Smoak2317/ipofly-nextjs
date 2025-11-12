@@ -8,6 +8,46 @@ interface PageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
+export const metadata = {
+  title: "Ipofly - Live IPO GMP Today | Grey Market Premium Tracker India 2025",
+  description: "Track Live IPO GMP Today ✓ Grey Market Premium ✓ Mainboard & SME IPO ✓ Subscription Status ✓ Allotment Status ✓ Latest IPO News India 2025",
+  keywords: [
+    "ipo gmp",
+    "ipo gmp today",
+    "grey market premium",
+    "live ipo gmp",
+    "mainboard ipo",
+    "sme ipo",
+    "upcoming ipo",
+    "ongoing ipo",
+    "ipo subscription status",
+    "ipo allotment status"
+  ],
+  openGraph: {
+    title: "IpoFly - Live IPO GMP Today | Grey Market Premium Tracker",
+    description: "India's Most Trusted Platform for Live IPO GMP Tracking",
+    url: "https://ipofly.com",
+    siteName: "Ipofly",
+    type: "website",
+    images: [
+      {
+        url: "https://ipofly.com/logo-light.png",
+        width: 1200,
+        height: 630,
+        alt: "Ipofly - Live IPO GMP Tracker",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IpoFly - Live IPO GMP Today",
+    description: "Track Live IPO GMP with Real-time Updates",
+    images: ["https://ipofly.com/twitter-image.png"],
+  },
+  alternates: {
+    canonical: "https://ipofly.com",
+  },
+};
 export default async function HomePage({ searchParams }: PageProps) {
   const params = await searchParams;
   const searchQuery = params.q?.toLowerCase() || '';

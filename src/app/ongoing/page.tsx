@@ -3,7 +3,20 @@ import SmartFilters from "@/components/SmartFilters";
 import Link from "next/link";
 
 export const revalidate = 300;
-export const metadata = { title: "Live IPO | IpoFly" };
+export const metadata = {
+  title: "Live IPO | Ongoing IPO Today | Open for Bidding | IpoFly",
+  description: "Apply for Live IPO Today ✓ Ongoing IPO List ✓ Open for Bidding ✓ Real-time Subscription Status ✓ Live IPO GMP India 2025",
+  keywords: "live ipo, ongoing ipo, ipo open today, ipo bidding, current ipo, apply ipo today",
+  openGraph: {
+    title: "Live IPO | Ongoing IPO Today | Open for Bidding",
+    description: "Apply now for currently open IPOs with real-time subscription tracking",
+    url: "https://ipofly.com/ongoing",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://ipofly.com/ongoing",
+  },
+};
 
 export default async function OngoingPage() {
   const ipos = await fetchIPOsByStatus("ongoing");
