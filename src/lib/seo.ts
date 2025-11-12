@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { IPO } from '@/types/ipo';
 import { parseGMP, slugify } from './api';
 
-const SITE_URL = 'https://smoak2317.github.io/ipofly-frontend';
+const SITE_URL = 'https://ipofly.com';
 const SITE_NAME = 'IpoFly';
 const DEFAULT_DESCRIPTION = 'Track Live IPO GMP Today ✓ Grey Market Premium ✓ Mainboard & SME IPO ✓ Subscription Status ✓ Allotment Status ✓ Latest IPO News India 2024. Real-time IPO tracking for smart investors.';
 
