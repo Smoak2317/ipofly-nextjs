@@ -1,4 +1,4 @@
-// src/components/AIAnalysisDetail.tsx - FIXED VERSION
+// src/components/AIAnalysisDetail.tsx - FIXED BUILD ERRORS
 'use client';
 
 import Link from 'next/link';
@@ -58,19 +58,6 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
     if (score >= 50) return 'bg-yellow-500';
     return 'bg-red-500';
   };
-
-  // FIXED: Parse listing price to check if negative
-  const parseListingPrice = (price: string | undefined): { value: number; isNegative: boolean } => {
-    if (!price) return { value: 0, isNegative: false };
-
-    const numericValue = parseFloat(price.replace(/[^0-9.-]/g, ''));
-    return {
-      value: numericValue,
-      isNegative: numericValue < 0
-    };
-  };
-
-  const listingPrice = ipo.expectedListingPrice ? parseListingPrice(ipo.expectedListingPrice) : null;
 
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">

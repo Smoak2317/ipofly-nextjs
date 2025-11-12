@@ -1,4 +1,4 @@
-// src/components/HeatMap/HeatMapTile.tsx - BIGGER TILES VERSION
+// src/components/HeatMap/HeatMapTile.tsx - FIXED BUILD ERRORS
 'use client';
 
 import { IPO } from '@/types/ipo';
@@ -9,6 +9,17 @@ interface HeatMapTileProps {
   ipo: IPO;
   onHover: (ipo: IPO | null) => void;
   onClick: (ipo: IPO) => void;
+}
+
+interface StyleConfig {
+  bg: string;
+  border: string;
+  text: string;
+  glow: string;
+  size: string;
+  fontSize: string;
+  logoSize: string;
+  minHeight: string;
 }
 
 export default function HeatMapTile({ ipo, onHover, onClick }: HeatMapTileProps) {
@@ -23,9 +34,9 @@ export default function HeatMapTile({ ipo, onHover, onClick }: HeatMapTileProps)
 
   const percentValue = getPercentageValue();
 
-  const getStatusBasedStyle = () => {
+  const getStatusBasedStyle = (): StyleConfig => {
     // Status-based styling for non-open IPOs
-    const statusStyles: Record<string, any> = {
+    const statusStyles: Record<string, StyleConfig> = {
       upcoming: {
         bg: 'from-blue-400 to-blue-500',
         border: 'border-blue-600',
