@@ -20,8 +20,17 @@ export const metadata: Metadata = {
       { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
       { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/safari-pinned-tab.svg',
+      },
+    ],
   },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {
@@ -39,6 +48,38 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'IpoFly',
+    description: 'Track Live IPO GMP Today - Grey Market Premium for Mainboard & SME IPOs in India',
+    url: 'https://ipofly.com',
+    logo: 'https://ipofly.com/android-chrome-512x512.png',
+    image: 'https://ipofly.com/og-image.png',
+    publisher: {
+      '@type': 'Organization',
+      name: 'IpoFly',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://ipofly.com/android-chrome-512x512.png',
+        width: 512,
+        height: 512
+      }
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://ipofly.com/?q={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
+    },
+    sameAs: [
+      'https://twitter.com/ipofly',
+      'https://facebook.com/ipofly'
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -58,8 +99,25 @@ export default function RootLayout({
           }}
         />
 
-        {/* PWA Meta Tags */}
+        {/* Explicit Favicon Links - CRITICAL FOR GOOGLE */}
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="Ipofly" />
+        <link rel="manifest" href="/site.webmanifest" />
+
+        {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
+
+        {/* Safari Pinned Tab */}
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#6366f1" />
+
+        {/* MS Tile */}
+        <meta name="msapplication-TileColor" content="#6366f1" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+
+        {/* PWA Meta Tags */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -72,43 +130,19 @@ export default function RootLayout({
           media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
         />
 
-        {/* Android Theme */}
-        <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)" />
-
-        {/* Favicon links */}
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        {/* Canonical URL */}
         <link rel="canonical" href="https://ipofly.com/" />
-        <link rel="preconnect" href="https://ipofly-273428006377.asia-south1.run.app" />
+
+        {/* Preconnect to Backend - FIXED: Use env variable */}
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_BACKEND_URL} />
+
+        {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "IpoFly",
-              "url": "https://yourdomain.com",
-              "description": "India's Most Trusted Live IPO GMP Tracker",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://yourdomain.com/?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-              },
-              "publisher": {
-                "@type": "Organization",
-                "name": "IpoFly",
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": "https://yourdomain.com/logo-light.png"
-                }
-              }
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* ✅ Google Analytics */}
+
+        {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHLY88C18C"></script>
         <script
           dangerouslySetInnerHTML={{
