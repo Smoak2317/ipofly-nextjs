@@ -20,7 +20,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
   const aiAnalysis = ipo.aiAnalysis;
   const hasAIAnalysis = !!aiAnalysis && typeof aiAnalysis === 'object';
   const aiScore = hasAIAnalysis ? (aiAnalysis.score || 0) : 0;
-  const aiRating = hasAIAnalysis ? (aiAnalysis.rating || 'NEUTRAL') : 'NEUTRAL';
+  const aiRating = hasAIAnalysis ? (aiAnalysis.recommendation || 'NEUTRAL') : 'NEUTRAL';
 
   const getAIScoreColor = (score: number) => {
     if (score >= 75) return 'from-green-500 to-emerald-600';
@@ -30,8 +30,8 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
     return 'from-red-500 to-rose-600';
   };
 
-  const getAIRatingBadge = (rating: string) => {
-    const ratings: Record<string, { label: string; color: string; icon: string }> = {
+  const getAIRatingBadge = (recommendation: string) => {
+    const recommendations: Record<string, { label: string; color: string; icon: string }> = {
       STRONG_APPLY: { label: 'Strong Apply', color: 'bg-green-600', icon: '🚀' },
       APPLY: { label: 'Apply', color: 'bg-green-500', icon: '✅' },
       CONSIDER_APPLYING: { label: 'Consider', color: 'bg-yellow-500', icon: '🤔' },
@@ -40,7 +40,7 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
       STRONG_AVOID: { label: 'Strong Avoid', color: 'bg-red-500', icon: '🛑' },
       HIGH_RISK_AVOID: { label: 'High Risk', color: 'bg-red-600', icon: '💀' },
     };
-    return ratings[rating] || ratings.NEUTRAL;
+    return recommendations[recommendation] || recommendations.NEUTRAL;
   };
 
   const aiRatingInfo = getAIRatingBadge(aiRating);

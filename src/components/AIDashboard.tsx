@@ -49,7 +49,7 @@ export default function AIDashboard({ allIpos }: AIDashboardProps) {
     // AI Recommendation Filter
     if (activeFilter !== 'all') {
       filtered = filtered.filter(ipo =>
-        ipo.aiAnalysis && ipo.aiAnalysis.rating === activeFilter
+        ipo.aiAnalysis && ipo.aiAnalysis.recommendation === activeFilter
       );
     }
 

@@ -23,7 +23,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
     return null;
   }
 
-  const getRatingColor = (rating: string) => {
+  const getRatingColor = (recommendation: string) => {
     const colors: Record<string, string> = {
       STRONG_APPLY: 'from-green-500 to-emerald-600',
       APPLY: 'from-green-400 to-emerald-500',
@@ -33,7 +33,7 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
       STRONG_AVOID: 'from-red-500 to-rose-600',
       HIGH_RISK_AVOID: 'from-red-600 to-red-700',
     };
-    return colors[rating] || colors.NEUTRAL;
+    return colors[recommendation] || colors.NEUTRAL;
   };
 
   const getRiskColor = (riskLevel: string) => {
@@ -112,9 +112,9 @@ export default function AIAnalysisDetail({ ipo }: AIAnalysisDetailProps) {
             </h2>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-              <div className={`bg-gradient-to-r ${getRatingColor(aiAnalysis.rating || 'NEUTRAL')} rounded-2xl p-4 sm:p-6 text-center min-w-[140px]`}>
+              <div className={`bg-gradient-to-r ${getRatingColor(aiAnalysis.recommendation || 'NEUTRAL')} rounded-2xl p-4 sm:p-6 text-center min-w-[140px]`}>
                 <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
-                  {(aiAnalysis.rating || 'NEUTRAL').replace(/_/g, ' ')}
+                  {(aiAnalysis.recommendation || 'NEUTRAL').replace(/_/g, ' ')}
                 </div>
                 <div className="text-lg sm:text-xl font-semibold text-white/90">
                   {(aiAnalysis.score || 0).toFixed(2)}/100

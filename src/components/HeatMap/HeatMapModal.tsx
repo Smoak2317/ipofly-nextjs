@@ -199,13 +199,13 @@ export default function HeatMapModal({ ipo, onClose }: HeatMapModalProps) {
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg p-4 border border-indigo-200 dark:border-indigo-700">
               <div className="flex items-center justify-between mb-2">
                 <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                  aiAnalysis.rating === 'STRONG_APPLY' ? 'bg-green-500 text-white' :
-                  aiAnalysis.rating === 'APPLY' ? 'bg-green-400 text-white' :
-                  aiAnalysis.rating === 'CONSIDER_APPLYING' ? 'bg-yellow-500 text-gray-900' :
-                  aiAnalysis.rating === 'NEUTRAL' ? 'bg-gray-400 text-white' :
+                  aiAnalysis.recommendation === 'STRONG_APPLY' ? 'bg-green-500 text-white' :
+                  aiAnalysis.recommendation === 'APPLY' ? 'bg-green-400 text-white' :
+                  aiAnalysis.recommendation === 'CONSIDER_APPLYING' ? 'bg-yellow-500 text-gray-900' :
+                  aiAnalysis.recommendation === 'NEUTRAL' ? 'bg-gray-400 text-white' :
                   'bg-red-500 text-white'
                 }`}>
-                  {(aiAnalysis.rating || 'NEUTRAL').replace(/_/g, ' ')}
+                  {(aiAnalysis.recommendation || 'NEUTRAL').replace(/_/g, ' ')}
                 </span>
                 <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                   {(aiAnalysis.score || 0)}/100

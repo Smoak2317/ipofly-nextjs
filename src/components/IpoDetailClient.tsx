@@ -356,15 +356,15 @@ export default function IpoDetailClient({ ipo }: IpoDetailClientProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="text-center">
           <div className={`text-2xl font-bold mb-2 ${
-            ipo.aiAnalysis.rating === 'STRONG_APPLY' ? 'text-green-600' :
-            ipo.aiAnalysis.rating === 'APPLY' ? 'text-green-500' :
-            ipo.aiAnalysis.rating === 'CONSIDER_APPLYING' ? 'text-yellow-500' :
-            ipo.aiAnalysis.rating === 'NEUTRAL' ? 'text-yellow-400' :
-            ipo.aiAnalysis.rating === 'AVOID' ? 'text-orange-500' :
-            ipo.aiAnalysis.rating === 'STRONG_AVOID' ? 'text-red-500' :
+            ipo.aiAnalysis.recommendation === 'STRONG_APPLY' ? 'text-green-600' :
+            ipo.aiAnalysis.recommendation === 'APPLY' ? 'text-green-500' :
+            ipo.aiAnalysis.recommendation === 'CONSIDER_APPLYING' ? 'text-yellow-500' :
+            ipo.aiAnalysis.recommendation === 'NEUTRAL' ? 'text-yellow-400' :
+            ipo.aiAnalysis.recommendation === 'AVOID' ? 'text-orange-500' :
+            ipo.aiAnalysis.recommendation === 'STRONG_AVOID' ? 'text-red-500' :
             'text-red-600' // For HIGH_RISK_AVOID and fallback
           }`}>
-            {(ipo.aiAnalysis.rating || 'NEUTRAL').replace(/_/g, ' ')}
+            {(ipo.aiAnalysis.recommendation || 'NEUTRAL').replace(/_/g, ' ')}
           </div>
           <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
             {(ipo.aiAnalysis.score || 0)}/100

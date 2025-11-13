@@ -24,8 +24,8 @@ export default function AIAnalysisClient({ ipo }: AIAnalysisClientProps) {
     return 'from-red-500 to-rose-600';
   };
 
-  const getRatingInfo = (rating: string) => {
-    const ratings: Record<string, { label: string; color: string; icon: string; description: string }> = {
+  const getRatingInfo = (recommendation: string) => {
+    const recommendations: Record<string, { label: string; color: string; icon: string; description: string }> = {
       STRONG_APPLY: {
         label: 'Strong Apply',
         color: 'bg-green-600',
@@ -69,12 +69,12 @@ export default function AIAnalysisClient({ ipo }: AIAnalysisClientProps) {
         description: 'Very high risk, not recommended'
       },
     };
-    return ratings[rating] || ratings.NEUTRAL;
+    return recommendations[recommendation] || recommendations.NEUTRAL;
   };
 
 
 
-  const ratingInfo = getRatingInfo(aiAnalysis.rating);
+  const ratingInfo = getRatingInfo(aiAnalysis.recommendation);
   const scoreColor = getScoreColor(aiAnalysis.score);
 
   const sections = [
