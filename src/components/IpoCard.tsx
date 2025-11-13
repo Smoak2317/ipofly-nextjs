@@ -1,4 +1,4 @@
-// src/components/IpoCard.tsx - FIXED VERSION
+// src/components/IpoCard.tsx - FIXED AI BAR VERSION
 'use client';
 
 import Link from 'next/link';
@@ -144,10 +144,10 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
             </div>
           </div>
 
-          {/* AI ANALYSIS SECTION - PROMINENT */}
+          {/* AI ANALYSIS SECTION - Updated Progress Bar */}
           {hasAIAnalysis && (
             <div className="mb-3">
-              <div className={`bg-gradient-to-r ${aiScoreColor} rounded-xl p-3 text-white shadow-lg`}>
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 text-gray-900 dark:text-gray-100 shadow-lg">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{aiRatingInfo.icon}</span>
@@ -160,9 +160,9 @@ export default function IpoCard({ ipo, priority = false }: IpoCardProps) {
                 </div>
 
                 {/* AI Score Progress Bar */}
-                <div className="relative w-full h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className="relative w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
-                    className="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-500"
+                    className={`absolute inset-y-0 left-0 bg-gradient-to-r ${aiScoreColor} rounded-full transition-all duration-500`}
                     style={{ width: `${aiScore}%` }}
                   />
                 </div>
