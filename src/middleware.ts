@@ -4,15 +4,19 @@ import type { NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // ❌ Don't redirect favicon or sitemap
-  if (url.pathname === "/favicon.ico" || url.pathname.startsWith("/sitemap")) {
+  // Do NOT redirect these files — Google requires 200 OK
+  if (
+    url.pathname === "/favicon.ico" ||
+    url.pathname === "/sitemap.xml" ||
+    url.pathname.startsWith("/sitemap")
+  ) {
     return NextResponse.next();
   }
 
-  // Redirect ipofly.com → www.ipofly.com
-  if (url.hostname === "ipofly.com") {
-    url.hostname = "www.ipofly.com";
-    return NextResponse.redirect(url);
+  // Redirect www → non-www
+  if (url.hostname === "www.ipofly.com") {
+    url.hostname = "ipofly.com";
+    return NextResponse.redirect(url, 308);
   }
 
   return NextResponse.next();
