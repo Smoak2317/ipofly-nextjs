@@ -24,7 +24,7 @@ export const metadata = {
     "ipo allotment status"
   ],
   openGraph: {
-    title: "IpoFly - Live IPO GMP Today | Grey Market Premium Tracker",
+    title: "Ipofly - Live IPO GMP Today | Grey Market Premium Tracker",
     description: "India's Most Trusted Platform for Live IPO GMP Tracking",
     url: "https://ipofly.com",
     siteName: "Ipofly",
@@ -40,7 +40,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "IpoFly - Live IPO GMP Today",
+    title: "Ipofly - Live IPO GMP Today",
     description: "Track Live IPO GMP with Real-time Updates",
     images: ["https://ipofly.com/twitter-image.png"],
   },
@@ -82,11 +82,11 @@ export default async function HomePage({ searchParams }: PageProps) {
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200 dark:border-gray-700">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-          About IpoFly - India&apos;s #1 Live IPO GMP Tracker
+          About Ipofly - India&apos;s #1 Live IPO GMP Tracker
         </h2>
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
           <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-            IpoFly is India&apos;s most trusted platform for tracking <strong>Live IPO GMP (Grey Market Premium)</strong>.
+            Ipofly is India&apos;s most trusted platform for tracking <strong>Live IPO GMP (Grey Market Premium)</strong>.
             We provide real-time IPO data including GMP rates, kostak rates, subscription status,
             and allotment details for all <strong>mainboard IPOs</strong> and <strong>SME IPOs</strong> in India.
           </p>

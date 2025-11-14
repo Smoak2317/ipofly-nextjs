@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-    trailingSlash: true,
   images: {
     remotePatterns: [
       // ✅ Local backend (Spring Boot)

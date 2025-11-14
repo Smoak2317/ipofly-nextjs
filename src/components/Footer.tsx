@@ -239,7 +239,7 @@ export default function Footer() {
             <div>
               <p className="text-[10px] sm:text-xs font-semibold text-red-800 dark:text-red-300 mb-0.5">Disclaimer</p>
               <p className="text-[9px] sm:text-xs text-gray-700 dark:text-gray-300">
-                IPO GMP data is for informational purposes only. Invest at your own risk. Consult a SEBI-registered advisor.
+                Grey Market Premium (GMP) figures are based on unverified market sources and are for informational purposes only. They are not indicative of actual listing performance and should not be considered investment advice. Investors are advised to consult a SEBI-registered financial advisor before making any investment decisions.
               </p>
             </div>
           </div>
@@ -249,7 +249,7 @@ export default function Footer() {
         <div className="pt-3 sm:pt-6 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-2 sm:gap-4">
             <p className="text-[10px] sm:text-sm text-gray-600 dark:text-gray-400 text-center">
-              © {currentYear} <span className="font-semibold text-gray-900 dark:text-white">IpoFly</span>. All rights reserved.
+              © {currentYear} <span className="font-semibold text-gray-900 dark:text-white">Ipofly</span>. All rights reserved.
             </p>
           </div>
         </div>

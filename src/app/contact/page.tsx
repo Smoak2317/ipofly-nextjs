@@ -100,10 +100,10 @@ export default function ContactPage() {
                   Interested in advertising, partnerships, or business collaboration? Contact us at:
                 </p>
                 <a
-                  href="mailto:business@ipofly.com"
+                  href="mailto:support@ipofly.com"
                   className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold inline-block mt-2"
                 >
-                  business@ipofly.com
+                  support@ipofly.com
                 </a>
               </div>
 

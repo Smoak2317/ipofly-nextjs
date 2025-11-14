@@ -6,12 +6,13 @@ export function middleware(req: NextRequest) {
 
   // Do NOT redirect these files — Google requires 200 OK
   if (
-    url.pathname === "/favicon.ico" ||
-    url.pathname === "/sitemap.xml" ||
-    url.pathname.startsWith("/sitemap")
-  ) {
-    return NextResponse.next();
-  }
+      url.pathname === "/favicon.ico" ||
+      url.pathname === "/sitemap.xml" ||
+      url.pathname === "/robots.txt" ||
+      url.pathname.startsWith("/sitemap")
+    ) {
+      return NextResponse.next();
+    }
 
   // Redirect www → non-www
   if (url.hostname === "www.ipofly.com") {

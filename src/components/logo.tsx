@@ -51,7 +51,7 @@ export default function Logo({ size = 'md', showText = true }: LogoProps) {
       <div className={`relative ${container} flex-shrink-0`}>
         <Image
           src={logoSrc}
-          alt="IpoFly Logo"
+          alt="Ipofly Logo"
           width={image}
           height={image}
           className="w-full h-full object-contain"
@@ -60,7 +60,7 @@ export default function Logo({ size = 'md', showText = true }: LogoProps) {
       </div>
       {showText && (
         <div>
-          <div className="text-xl font-bold text-gray-900 dark:text-white">IpoFly</div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white">Ipofly</div>
           <div className="text-xs text-gray-600 dark:text-gray-400">Live GMP Tracker</div>
         </div>
       )}
