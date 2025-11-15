@@ -51,14 +51,14 @@ export default function RootLayout({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'IpoFly',
+    name: 'Ipofly',
     description: 'Track Live IPO GMP Today - Grey Market Premium for Mainboard & SME IPOs in India',
     url: 'https://ipofly.com',
     logo: 'https://ipofly.com/android-chrome-512x512.png',
     image: 'https://ipofly.com/og-image.png',
     publisher: {
       '@type': 'Organization',
-      name: 'IpoFly',
+      name: 'Ipofly',
       logo: {
         '@type': 'ImageObject',
         url: 'https://ipofly.com/android-chrome-512x512.png',

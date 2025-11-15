@@ -6,11 +6,11 @@ import { parseGMP, slugify } from './api';
 
 const SITE_URL = 'https://ipofly.com';
 const SITE_NAME = 'IpoFly';
-const DEFAULT_DESCRIPTION = 'Track Live IPO GMP Today ✓ Grey Market Premium ✓ Mainboard & SME IPO ✓ Subscription Status ✓ Allotment Status ✓ Latest IPO News India 2024. Real-time IPO tracking for smart investors.';
+const DEFAULT_DESCRIPTION = 'Track Live IPO GMP Today ✓ Grey Market Premium ✓ Mainboard & SME IPO ✓ Subscription Status ✓ Allotment Status ✓ Latest IPO News India 2025. Real-time IPO tracking for smart investors.';
 
 export function generateHomeMetadata(): Metadata {
   return {
-    title: 'IpoFly - Live IPO GMP Today | Grey Market Premium Tracker India 2024',
+    title: 'IpoFly - Live IPO GMP Today | Grey Market Premium Tracker India 2025',
     description: DEFAULT_DESCRIPTION,
     keywords: [
       'ipo gmp',
@@ -46,7 +46,7 @@ export function generateHomeMetadata(): Metadata {
       locale: 'en_IN',
       url: SITE_URL,
       siteName: SITE_NAME,
-      title: 'IpoFly - Live IPO GMP Today | Grey Market Premium Tracker India 2024',
+      title: 'IpoFly - Live IPO GMP Today | Grey Market Premium Tracker India 2025',
       description: DEFAULT_DESCRIPTION,
       images: [
         {
@@ -59,7 +59,7 @@ export function generateHomeMetadata(): Metadata {
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'IpoFly - Live IPO GMP Today | Grey Market Premium Tracker India 2024',
+      title: 'IpoFly - Live IPO GMP Today | Grey Market Premium Tracker India 2025',
       description: DEFAULT_DESCRIPTION,
       images: [`${SITE_URL}/twitter-image.png`],
       creator: '@IpoFly',

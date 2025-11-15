@@ -8,7 +8,7 @@ export const metadata = {
   description: "Check Upcoming IPO ✓ Future IPO List ✓ IPO Calendar 2025-26 ✓ Expected IPO ✓ Upcoming Mainboard & SME IPO India",
   keywords: "upcoming ipo, future ipo, ipo calendar, expected ipo, upcoming ipo list, new ipo",
   openGraph: {
-    title: "Upcoming IPO | Future IPO List India 2024",
+    title: "Upcoming IPO | Future IPO List India 2025",
     description: "Stay ahead with upcoming IPO list and expected launch dates",
     url: "https://ipofly.com/upcoming",
     type: "website",
